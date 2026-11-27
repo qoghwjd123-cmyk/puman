@@ -213,7 +213,7 @@ const SEED_TASKS=[
  T('핵심','회원권 판매 시작','red',L('L'),false,'2027년 2월 확정, 날짜 미정'),
  T('기반','톤·로고 확정','blue',R('C','D'),true),
  T('기반','채널·광고계정 세팅','blue',R('C','E'),true,'채널, 광고 계정, 사전 신청 페이지, 픽셀'),
- T('기반','기획·운영 (미디어볼 월 고정)','blue',R('C','AG'),true),
+ T('기반','기획·운영','blue',R('C','AG'),true),
  T('기반','홍보 성과 보고','green',L('K','O','T','X','AC','AG'),false,'월 1회, 비용은 기획·운영에 포함'),
  T('콘텐츠','유튜브 롱폼 제작','blue',[...R('C','E'),...L('J','L','N','P','R','T','V','X','Z','AB','AD')],true,'첫 3편 12일, 이후 격주 1편 가정'),
  T('콘텐츠','유튜브 롱폼 업로드','green',L('E','F','G','K','M','O','Q','S','U','W','Y','AA','AC','AE'),false),
@@ -288,6 +288,7 @@ function localApi(){
   if(!S.tasks.length){S={settings:{...SEED_SET},decisions:SEED_DEC,tasks:SEED_TASKS,contents:SEED_CON,docs:SEED_DOCS}}
   if(!S.contents)S.contents=SEED_CON;
   if(!S.docs)S.docs=SEED_DOCS;
+  S.tasks.forEach(t=>{if(t.name==='기획·운영 (미디어볼 월 고정)')t.name='기획·운영'});
   S.decisions.forEach(d=>{['from','to'].forEach(k=>{d[k]=nameOf(d[k])});if(d.confirmedBy)d.confirmedBy=d.confirmedBy.replace(/^(형님|현우|호정) 확인$/,m=>({'형님 확인':'푸만 확인','현우 확인':'푸만 확인','호정 확인':'미디어볼 확인'})[m])});(S.docs||[]).forEach(k=>{if(k.from)k.from=nameOf(k.from)});
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};draw()};
   return{
@@ -321,7 +322,8 @@ async function fireApi(){
       F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('docs'),q=>{S.docs=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
-      F.onSnapshot(c('tasks'),q=>{S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);draw()});
+      F.onSnapshot(c('tasks'),q=>{S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
+        if(me.role==='admin')S.tasks.filter(t=>t.name==='기획·운영 (미디어볼 월 고정)').forEach(t=>F.updateDoc(F.doc(db,'tasks',t.id),{name:'기획·운영'}));draw()});
       res({
         setSettings:p=>F.setDoc(F.doc(db,'settings','main'),p,{merge:true}),
         addDecision:d=>F.addDoc(c('decisions'),{...d,createdAt:Date.now()}),
