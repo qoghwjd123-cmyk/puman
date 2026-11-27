@@ -188,9 +188,9 @@ input[type=date]{cursor:pointer}
 .clist .due{min-width:40px;color:var(--mute);font-size:12.5px;font-variant-numeric:tabular-nums}.clist .ct{flex:1;min-width:0;color:inherit;text-decoration:none}.clist .ct small{display:block;color:var(--mute);font-size:12px;margin-top:1px}
 .clist a.ct:hover{text-decoration:underline}.stt{font-size:11.5px;font-weight:600;border-radius:4px;padding:2px 7px;background:#EEE9E4}.stt.s1{background:#F6EBD3;color:#8A6216}.stt.s2{background:#E3EEE5;color:#3F6E49}
 .kd{font-size:10.5px;font-weight:700;color:var(--mute);border:1px solid var(--line);border-radius:4px;padding:1px 5px;min-width:38px;text-align:center}
-.logc{margin-top:12px}.log{list-style:none;margin:0;padding:0}.log li{display:grid;grid-template-columns:72px 64px 80px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px;align-items:baseline}.log li:first-child{border-top:0}
-.log .when{color:var(--mute);font-size:12.5px}.log .what{color:var(--mute)}.log .obj{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media(max-width:900px){.row3c{grid-template-columns:minmax(0,1fr)}.log li{grid-template-columns:60px minmax(0,1fr)}.log .what,.log .obj{grid-column:2}}
+.logc{margin-top:12px}.log{list-style:none;margin:0;padding:0}.log li{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px;align-items:baseline}.log li:first-child{border-top:0}
+.log .when{color:var(--mute);font-size:12.5px;white-space:nowrap}.log .lb{display:flex;gap:10px;min-width:0;align-items:baseline}.log .lb b{min-width:54px}.log .what{min-width:70px}.log .what{color:var(--mute)}.log .obj{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:900px){.row3c{grid-template-columns:minmax(0,1fr)}.log li{grid-template-columns:56px minmax(0,1fr);gap:8px}.log .lb{flex-wrap:wrap;gap:2px 8px}.log .lb b,.log .what{min-width:0}.log .obj{flex-basis:100%}}
 .more2{display:block;width:100%;margin-top:6px;padding:9px;border:1px dashed var(--line);border-radius:8px;background:none;color:var(--mute);font:inherit;font-size:13px;text-align:center;text-decoration:none;cursor:pointer}.more2:hover{color:inherit;border-color:#cfcfcf}
 
 .gbar{display:flex;align-items:center;gap:10px;margin:-4px 0 10px}.gbar .sub{font-size:12.5px}
@@ -198,6 +198,8 @@ input[type=date]{cursor:pointer}
 table.g.gm{min-width:0;width:100%}.g.gm .tot,.g.gm thead th.tot{position:static;box-shadow:none}.g.gm td.mc{min-width:58px}.g.gm td.mc{min-width:58px;font-size:12px;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums}.g.gm td.mc:hover{box-shadow:inset 0 0 0 2px var(--rose)}
 .g.gm th.mh{cursor:pointer;font-size:12px;height:30px}.g.gm th.yr{font-size:11px;font-weight:500;height:24px;opacity:.85}.g.gm tfoot td{font-size:12px}
 @media(max-width:700px){.g .nm{min-width:112px;max-width:112px;font-size:12px;padding:0 8px}.g td.tot{min-width:56px;font-size:11.5px}table.g.gm{table-layout:fixed}.g.gm .nm{width:96px;min-width:0;max-width:none}.g.gm .tot,.g.gm th.tot{display:none}.g.gm td.mc{min-width:0;font-size:0}.g.gm th.mh{font-size:10.5px;padding:0}.g.gm th.mh .w{display:none}.g.gm th.yr{font-size:10px}.g.gm .yl{display:none}.g.gm tfoot td{font-size:0}.g.gm tfoot td.nm{font-size:11.5px}.gbar{flex-wrap:wrap}}
+
+@media(max-width:700px){table.cl,table.cl tbody{display:block}.cl thead{display:none}.cl tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 10px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line)}.cl td{padding:0;border:0;min-width:0}.cl td:nth-child(1),.cl td:nth-child(2){grid-column:1/-1}.cl td.tt{font-size:15px;line-height:1.4}.cl td:nth-child(4){grid-column:2}.cl td.due{display:flex;align-items:center;gap:6px}.cl td.due input.date{max-width:150px;padding:6px 8px;font-size:14px}}
 </style>
 </head>
 <body>
@@ -416,16 +418,17 @@ function dash(){
   const w=curWeek(),before=new Date()<START;
   const curM=MONTHS.find(m=>w>=m[1]&&w<=m[2])||MONTHS[0];
   const wk=S.tasks.filter(t=>(t.cells||{})[w]!==undefined);
+  const okT=t=>typeof t==='number'&&t>1.6e12;
   const DAY=864e5,wS=wd(w),wE=new Date(wS.getTime()+6*DAY);
   const ahead=[1,2,3,4].map(k=>w+k).filter(i=>i<NW).map(i=>({i,ts:S.tasks.filter(t=>(t.cells||{})[i]!==undefined&&(t.cells||{})[i-1]===undefined)})).filter(x=>x.ts.length);
   const TT=(st.tiers&&st.tiers.length?st.tiers:SEED_TIERS),tq=TT.reduce((a,t)=>a+(+t.qty||0),0),ts=TT.reduce((a,t)=>a+(+t.sold||0),0);
   const saleOn=st.saleDate&&new Date(st.saleDate+'T00:00:00')<=new Date();
   const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   const cw=(S.contents||[]).map(norm).filter(c=>c.due&&c.due>=ymd(wS)&&c.due<=ymd(wE)).sort((a,b)=>a.due.localeCompare(b.due));
-  const newDocs=(S.docs||[]).filter(k=>k.createdAt&&Date.now()-k.createdAt<7*DAY).sort((a,b)=>b.createdAt-a.createdAt).slice(0,3);
+  const newDocs=(S.docs||[]).filter(k=>okT(k.createdAt)&&Date.now()-k.createdAt<7*DAY).sort((a,b)=>b.createdAt-a.createdAt).slice(0,3);
   const ago=t=>{const m=Math.floor((Date.now()-t)/6e4);return m<60?Math.max(1,m)+'분 전':m<1440?Math.floor(m/60)+'시간 전':Math.floor(m/1440)+'일 전'};
-  const LOG=[...D.map(d=>({t:d.createdAt,who:nameOf(d.from),what:'결정 요청',obj:d.title})),...D.filter(d=>d.confirmedAt).map(d=>({t:d.confirmedAt,who:nameOf(d.to),what:'결정 확정',obj:d.title})),...(S.docs||[]).map(k=>({t:k.createdAt,who:nameOf(k.from||ADMIN0()),what:'자료 추가',obj:k.title})),...(S.contents||[]).map(c=>({t:c.createdAt,who:'미디어볼',what:'콘텐츠 등록',obj:c.title}))].filter(x=>x.t).sort((a,b)=>b.t-a.t).slice(0,5);
-  const stale=d=>d.createdAt&&Date.now()-d.createdAt>7*DAY;
+  const LOG=[...D.map(d=>({t:d.createdAt,who:nameOf(d.from),what:'결정 요청',obj:d.title})),...D.filter(d=>d.confirmedAt).map(d=>({t:d.confirmedAt,who:nameOf(d.to),what:'결정 확정',obj:d.title})),...(S.docs||[]).map(k=>({t:k.createdAt,who:nameOf(k.from||ADMIN0()),what:'자료 추가',obj:k.title})),...(S.contents||[]).map(c=>({t:c.createdAt,who:'미디어볼',what:'콘텐츠 등록',obj:c.title}))].filter(x=>okT(x.t)).sort((a,b)=>b.t-a.t).slice(0,5);
+  const stale=d=>okT(d.createdAt)&&Date.now()-d.createdAt>7*DAY;
   const dd=(v,s,emptyTxt)=>v===null?`<div class="big">날짜 미정</div><div class="sub">${emptyTxt}</div>`:`<div class="big">${v>0?'D-'+v:v===0?'D-DAY':'D+'+(-v)}</div><div class="sub">${fdate(s)}</div>`;
   const dateIn=(k,v)=>isAdmin()?`<input class="date" type="date" id="${k}" value="${esc(v)}" aria-label="날짜 선택">`:'';
   const gcol=GC;
@@ -466,7 +469,7 @@ function dash(){
    </div>
   </section>
   <div class="card logc"><div class="head"><h2>최근 변경</h2><p class="sub">최근 5건</p></div>
-   ${LOG.length?`<ul class="log">${LOG.map(x=>`<li><span class="when">${ago(x.t)}</span><b>${esc(x.who)}</b><span class="what">${x.what}</span><span class="obj">${esc(x.obj)}</span></li>`).join('')}</ul>`:`<p class="empty">아직 변경 내역이 없어요.</p>`}
+   ${LOG.length?`<ul class="log">${LOG.map(x=>`<li><span class="when">${ago(x.t)}</span><span class="lb"><b>${esc(x.who)}</b><span class="what">${x.what}</span><span class="obj">${esc(x.obj)}</span></span></li>`).join('')}</ul>`:`<p class="empty">아직 변경 내역이 없어요.</p>`}
   </div>`);
   ['openDate','saleDate'].forEach(k=>{const e=app.querySelector('#'+k);if(e)e.onchange=()=>api.setSettings({[k]:e.value})});
   app.querySelectorAll('[data-ok]').forEach(e=>e.onchange=()=>api.updateDecision(e.dataset.ok,{status:'confirmed',confirmedAt:Date.now(),confirmedBy:nameOf(me.id)+' 확인'}));
