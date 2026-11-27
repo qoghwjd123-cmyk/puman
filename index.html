@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PUMAN 오픈 준비</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap">
+<style>
+/* VOICE  차분한 실무 상황판. 함께 매주 여는 오픈 준비 본부 (흰 바탕 + 구분 색)
+   IDEA   현장 사무실 벽의 공정표 + 결정 대장
+   PICTURE 대시보드는 결정 대장, 기획·예산은 공정표(간트)가 그림
+   COLOUR 디자인북 재료: 그레이지 스톤 바탕, 흰 패널, 짙은 먹색, 더스티 로즈 포인트. 간트는 기존 엑셀 범례색
+   TYPE   Pretendard 본문 + Cormorant Garamond 로고
+   LAYOUT 4칸 요약 → 결정 대장(2/3) + 이번 주(1/3). 기획·예산은 요약 → 간트 → 차트 → 표 */
+:root{color-scheme:light;
+--bg:#F6F7F8;--panel:#FFFFFF;--ink:#1F2328;
+--mute:#6B7280;--line:#E5E7EB;--soft:#F3F4F6;
+--rose:#C4614F;--oak:#8A6A48;--navy:#2B2F36;
+--c-core:#C4614F;--c-base:#4F6488;--c-cont:#5F9468;--c-pr:#D9A03F;--c-evt:#8C6A9E;--ok:#6E7F62}
+
+@font-face{font-family:'Pretendard Variable';src:url(fonts/PretendardVariable.woff2) format('woff2');font-weight:45 920;font-display:swap}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-0.01em;overflow-x:clip}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:20px max(16px,3vw) 60px}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:16px}
+.brand{display:flex;flex-direction:column;line-height:1.2}
+.brand b{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:600;letter-spacing:.08em}.brand span{font-size:13px;color:var(--mute)}
+nav{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
+nav a{padding:8px 14px;border-radius:7px;text-decoration:none;color:var(--mute);font-weight:600;font-size:14px;white-space:nowrap}
+nav a.on{background:var(--ink);color:var(--bg)}nav a.off{opacity:.45;pointer-events:none}
+.who{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute)}
+.who select,.who button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;min-height:36px;cursor:pointer}
+.mode{font-size:13px;color:var(--mute);background:var(--soft);border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin-bottom:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h3{margin:0 0 10px;font-size:13px;font-weight:600;color:var(--mute)}
+.big{font-size:28px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.sub{font-size:13px;color:var(--mute);margin-top:6px}
+.date{margin-top:10px;width:100%;border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:6px 8px;font-size:14px;min-height:36px}
+.row2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:12px}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:12px}.head h2{margin:0;font-size:18px;white-space:nowrap}.head .sub{margin:0}
+.dec{list-style:none;margin:0;padding:0}
+.dec li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.dec li:first-child{border-top:0}
+.dec input[type=checkbox]{width:20px;height:20px;margin-top:2px;accent-color:var(--rose);cursor:pointer}
+.dec .t{font-weight:600}.dec .d{font-size:13px;color:var(--mute);margin-top:2px;white-space:pre-wrap}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--soft);color:var(--oak);margin-right:6px;vertical-align:1px}
+.x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:13px;padding:4px 6px;min-height:32px}
+.x:hover{color:var(--rose)}
+.add{display:grid;grid-template-columns:110px minmax(0,1fr) 170px auto;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.add textarea{grid-column:1/-1;resize:vertical;min-height:44px}
+.add input,.add select,.add textarea{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px 10px;font-size:16px;font-family:inherit;color:inherit}
+.btn{border:0;background:var(--ink);color:var(--bg);border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer;min-height:40px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+details.done{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+details.done summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ok)}
+.done li .t{text-decoration:none;color:var(--mute)}.done li .by{font-size:12px;color:var(--ok)}
+.week{list-style:none;margin:0;padding:0}
+.week li{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.week li:first-child{border-top:0}
+.dot{width:12px;height:12px;border-radius:3px;flex:none}
+.empty{color:var(--mute);font-size:14px;padding:12px 0}
+.stack{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--soft);margin-top:12px}
+:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+/* 기획·예산 */
+.sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.6fr);gap:12px;margin-bottom:12px}
+.scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.scen div{background:var(--soft);border-radius:8px;padding:8px 10px}
+.scen label{display:block;font-size:12px;color:var(--mute);white-space:nowrap}
+.scen input{width:100%;font-size:14px!important;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:4px 6px;font-size:15px;font-weight:600;text-align:right}
+.scen b{display:block;text-align:right;font-size:15px;padding:5px 0}
+.gwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table.g{border-collapse:separate;border-spacing:0;font-size:12px;min-width:1180px;width:100%}
+.g th,.g td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:0;height:30px;text-align:center}
+.g thead th{background:var(--navy);color:#FFFFFF;font-weight:600;position:sticky;top:0}
+.g thead tr:nth-child(2) th{font-size:11px;font-weight:500;height:34px;line-height:1.15}
+.g .nm{position:sticky;left:0;z-index:2;background:var(--panel);text-align:left;padding:0 10px;min-width:180px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.g thead .nm{z-index:3;background:var(--navy)}
+.g .grp td{background:var(--soft);font-weight:700;font-size:12px;color:var(--oak);height:26px}
+.g .grp .nm{background:var(--soft)}
+.g td.c{width:32px;min-width:32px;font-size:11px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums}
+.g td.c.ed{cursor:pointer}.g td.c.ed:hover{box-shadow:inset 0 0 0 2px var(--rose)}
+.g td.now{background:#FBEFEC}
+.g .ms{border-left:2px solid #C7CBD1}
+.g td.tot{min-width:76px;text-align:right;padding:0 8px;font-weight:600;font-variant-numeric:tabular-nums;position:sticky;right:0;z-index:1;background:var(--panel);box-shadow:-1px 0 0 var(--line)}
+.g thead th.tot{background:var(--navy);right:0;z-index:4}
+.g tfoot td{background:var(--soft);font-weight:700;font-variant-numeric:tabular-nums;font-size:11px;color:var(--ink)}
+.g tfoot .nm,.g tfoot .tot{background:var(--soft)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--mute);margin:10px 2px 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.row3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+.hb{display:grid;grid-template-columns:76px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:14px;padding:6px 0}
+.hb .bar{height:14px;background:var(--soft);border-radius:4px;overflow:hidden}.hb .bar i{display:block;height:100%;border-radius:4px}
+.hb b{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.vb{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;align-items:end;height:180px;padding-top:20px}
+.vb div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:4px}
+.vb i{width:70%;max-width:40px;background:var(--c-base);border-radius:4px 4px 0 0;min-height:2px}
+.vb span{font-size:12px;color:var(--mute)}.vb b{font-size:12px;font-variant-numeric:tabular-nums}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th{text-align:left;font-size:12px;color:var(--mute);font-weight:600;border-bottom:1px solid var(--line);padding:8px 6px}
+.t td{border-bottom:1px solid var(--line);padding:8px 6px}.t .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.t tfoot td{font-weight:700;border-bottom:0}
+.pop{position:fixed;z-index:50;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgb(0 0 0/.18);padding:12px;width:230px}
+.pop p{margin:0 0 8px;font-size:13px;color:var(--mute)}.pop input{width:100%;border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px;font-size:16px;text-align:right}
+.pop .acts{display:flex;gap:6px;margin-top:8px}.pop .acts .btn{flex:1;padding:6px;min-height:36px;font-size:13px}
+.cadd{display:grid;grid-template-columns:minmax(0,2fr) auto minmax(0,1fr) minmax(0,.9fr) minmax(0,1.1fr) auto;gap:8px;align-items:center}
+.chs{display:flex;gap:10px;flex-wrap:wrap;font-size:14px}.chs label{display:flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}.chs input{width:16px;height:16px;accent-color:var(--rose)}
+.fmt{font-size:13px;color:var(--mute);font-weight:600}.kc .fmt{display:block;font-size:12px;margin-bottom:4px}
+.cadd input,.cadd select,.fbar input:not([type=checkbox]),.fbar select{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 10px;font-size:15px;min-height:42px;width:100%}
+.ctop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0 12px}.ctop h2{margin:0;font-size:20px}
+.seg{margin-left:auto;display:flex;gap:6px}.seg button{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:8px 18px;font-weight:600;cursor:pointer;min-height:40px;color:var(--mute)}
+.seg button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.fbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.fbar input{max-width:280px}.fbar select{max-width:180px}
+.fbar label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mute);white-space:nowrap}.fbar input[type=checkbox]{width:18px;height:18px;accent-color:var(--rose)}
+.counts{font-size:13px;color:var(--mute);margin-left:auto}
+table.cl{width:100%;border-collapse:collapse;font-size:15px}
+.cl th{text-align:left;font-size:13px;font-weight:600;color:var(--mute);background:var(--soft);padding:12px 14px}
+.cl th:first-child{border-radius:10px 0 0 0}.cl th:last-child{border-radius:0 10px 0 0}
+.cl td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}.cl td.tt{font-weight:600}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.st{border:1px solid var(--line);border-radius:99px;padding:5px 10px;font-size:13px;font-weight:600;min-height:34px;cursor:pointer}
+.st-기획{background:#F1F2F4;color:#5B6270}.st-진행{background:#F3E5D3;color:#8A5E2E}.st-완료{background:#E3EADF;color:#4F6646}
+.due{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14px}.due .chip{margin-left:6px}
+.dd-soon{background:#F6E2DD;color:#9B4F43}.dd-later{background:#F1F2F4;color:#5B6270}.dd-past{background:#EDE7E0;color:#9A8F84}
+.board{display:grid;grid-template-columns:repeat(4,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--soft);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:140px}
+.col h3{margin:2px 4px 6px;font-size:14px;display:flex;align-items:center;gap:8px}.col h3 span{color:var(--mute);font-weight:500}
+.kc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.kc b{display:block;font-size:14px;line-height:1.4;margin-bottom:8px}.kc .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--mute)}
+.typ{display:inline-block;width:8px;height:8px;border-radius:2px}
+.dseg{margin:0 0 6px;justify-content:flex-start}.dseg button{padding:6px 14px;min-height:36px;font-size:13px}
+.turn{font-style:normal;font-size:11px;font-weight:700;background:var(--rose);color:#fff;border-radius:99px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+.wait{width:20px;text-align:center;color:var(--mute);font-weight:700;margin-top:2px}
+.dir{font-size:12px;color:var(--oak);margin-top:4px}.dir a{color:var(--rose)}
+.dadd{display:grid;grid-template-columns:auto minmax(0,2fr) minmax(0,.8fr) minmax(0,1.6fr) auto;gap:8px;align-items:center}
+.dadd input,.dadd select,.dlist>input{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px 10px;font-size:15px;min-height:42px;width:100%}
+.file{position:relative;display:flex;align-items:center;border:1px dashed var(--oak);border-radius:8px;padding:0 14px;min-height:42px;cursor:pointer;color:var(--oak);font-weight:600;font-size:14px;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.docs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.2fr);gap:12px;margin-top:12px;align-items:start}
+.dlist{display:flex;flex-direction:column;gap:6px;padding:12px}.dlist>input{margin-bottom:6px}
+.ditem{text-align:left;border:1px solid transparent;background:transparent;border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.ditem:hover{background:var(--soft)}.ditem.on{background:var(--soft);border-color:var(--line)}.ditem b{font-size:14px;line-height:1.4}.ditem .sub{margin:0;font-size:12px}.ditem .tag{align-self:flex-start}
+.dadd.txt{grid-template-columns:minmax(0,2fr) minmax(0,.8fr) minmax(0,1.6fr) auto}.dadd textarea,.kedit textarea{grid-column:1/-1;min-height:160px;resize:vertical;border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:10px 12px;font:inherit;font-size:15px;line-height:1.6;color:inherit}
+.kedit{display:flex;flex-direction:column;gap:8px}.kedit input{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px 10px;font-size:16px;font-weight:600}.kedit textarea{min-height:360px}.kedit .btn{align-self:flex-end}
+.dview{padding:22px 26px;min-height:420px}.dhead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.dhead .sub{margin:0 0 0 4px;display:inline}.dact{display:flex;gap:6px;align-items:center}.dact select{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:6px 8px;font-size:13px;max-width:240px;min-height:36px}
+.mdv{font-size:15px;line-height:1.7;max-width:760px}.mdv h1{font-size:24px;line-height:1.3;margin:12px 0 10px}.mdv h2{font-size:19px;margin:26px 0 8px}.mdv h3{font-size:16px;margin:20px 0 6px}
+.mdv table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0;display:block;overflow-x:auto}.mdv th,.mdv td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.mdv th{background:var(--soft)}
+.mdv code{background:var(--soft);padding:1px 5px;border-radius:4px;font-size:13px}.mdv pre{background:var(--soft);padding:12px;border-radius:8px;overflow-x:auto}.mdv hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+.mdv ul{padding-left:20px}.mdv li{margin:3px 0}.mdv a{color:var(--rose)}.mdv blockquote{margin:10px 0;padding:4px 14px;border-left:3px solid var(--oak);color:var(--mute)}
+.mi{border:1px solid transparent;background:transparent;border-radius:6px;padding:6px 8px;font-size:15px;width:100%;min-width:90px}.mi.n{text-align:right;max-width:130px;font-variant-numeric:tabular-nums}.mi:hover,.mi:focus{border-color:var(--line);background:var(--soft)}
+.mt td{vertical-align:middle}.pbar{height:8px;background:var(--soft);border-radius:99px;overflow:hidden;margin-bottom:2px}.pbar i{display:block;height:100%;border-radius:99px}
+.editable{cursor:pointer;border-radius:8px;transition:background .15s}.editable:hover{background:var(--soft)}
+div.editable{margin:-4px -6px;padding:4px 6px}
+.dedit{display:flex;flex-direction:column;gap:8px}.dedit .r{display:grid;grid-template-columns:100px minmax(0,1fr) 170px;gap:6px}
+.dedit input,.dedit select,.dedit textarea,.etl,.efm{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:7px 9px;font:inherit;font-size:15px;color:inherit;width:100%}
+.dedit textarea{min-height:60px;resize:vertical}.acts{display:flex;gap:6px}.acts .btn{min-height:34px;padding:6px 14px;font-size:13px}
+.bsplit{display:flex;flex-direction:column;gap:12px}.bsplit>div+div{border-top:1px solid var(--line);padding-top:12px}.bsplit h3{margin-bottom:4px}
+.mid{font-size:22px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}.mid small{font-size:13px;font-weight:600}
+.login{max-width:420px;margin:12vh auto;text-align:center}.login h1{font-size:28px;margin:0 0 8px}
+@media(max-width:900px){.docs{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dadd .file,.dadd #kt{grid-column:1/-1;max-width:none}.cadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cadd input:first-child,.cadd .chs{grid-column:1/-1}.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.row2,.row3{grid-template-columns:minmax(0,1fr)}.sum{grid-template-columns:repeat(3,minmax(0,1fr))}.sum .card:last-child{grid-column:1/-1}}
+@media(max-width:600px){.dedit .r{grid-template-columns:minmax(0,1fr)}.who{margin-left:0;width:100%}nav{width:100%;overflow-x:auto}.big{font-size:24px}.sum{grid-template-columns:minmax(0,1fr)}.add{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr)}.g .nm{min-width:130px;max-width:130px}}
+@media(prefers-reduced-motion:no-preference){.first .card,.first .gwrap{animation:in .35s ease both}@keyframes in{from{opacity:.4;transform:translateY(4px)}}}
+</style>
+</head>
+<body>
+<div class="wrap first" id="app"><p class="empty">불러오는 중…</p></div>
+<div id="popRoot"></div>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="firebase-config.js" onerror="window.PUMAN_CONFIG=window.PUMAN_CONFIG||null"></script>
+<script type="module">
+{
+// ---------- 기본 설정 ----------
+const START=new Date(2026,10,30); const NW=31;
+const MONTHS=[['12월',0,4],['1월',5,8],['2월',9,12],['3월',13,17],['4월',18,21],['5월',22,26],['6월',27,30]];
+const GC={'핵심':'var(--c-core)','기반':'var(--c-base)','콘텐츠':'var(--c-cont)','PR·광고':'var(--c-pr)','행사·체험':'var(--c-evt)'};
+const GT={'핵심':'#fff','기반':'#fff','콘텐츠':'#fff','PR·광고':'#2E2925','행사·체험':'#fff'};
+const GROUPS=['핵심','기반','콘텐츠','PR·광고','행사·체험'];
+const CATS=['회원권','범위','예산','일정','기타'];
+const wd=i=>{const d=new Date(START);d.setDate(d.getDate()+7*i);return d};
+const md=d=>`${d.getMonth()+1}/${d.getDate()}`;
+const col=s=>[...s].reduce((n,ch)=>n*26+ch.charCodeAt(0)-64,0)-3;
+const R=(a,b)=>{const o=[];for(let i=col(a);i<=col(b);i++)o.push(i);return o};
+const L=(...a)=>a.map(col);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Math.round(n).toLocaleString('ko-KR');
+const DOW='일월화수목금토';
+const fdate=s=>{if(!s)return'';const d=new Date(s+'T00:00:00');return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${DOW[d.getDay()]})`};
+const dday=s=>{if(!s)return null;const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(s+'T00:00:00')-t)/864e5)};
+const curWeek=()=>{const t=new Date();t.setHours(0,0,0,0);const i=Math.floor((t-START)/(7*864e5));return Math.max(0,Math.min(NW-1,i))};
+
+// ---------- 처음 데이터 (엑셀 간트 v4와 같은 일정, 금액은 입력 전 0) ----------
+const T=(g,name,color,weeks,cost,note='')=>({g,name,color,cost,note,cells:Object.fromEntries(weeks.map(w=>[w,cost?0:1]))});
+const SEED_TASKS=[
+ T('핵심','리조트 오픈','red',R('AC','AE'),false,'오픈 5~6월 확정, 날짜 미정. 5/31~6/14 주로 가정'),
+ T('핵심','회원권 홍보 준비','blue',R('C','K'),false),
+ T('핵심','회원권 홍보','red',R('L','AB'),false,'2월 판매 시작 ~ 오픈 전'),
+ T('핵심','회원권 판매 시작','red',L('L'),false,'2027년 2월 확정, 날짜 미정'),
+ T('기반','톤·로고 확정','blue',R('C','D'),true),
+ T('기반','채널·광고계정 세팅','blue',R('C','E'),true,'채널, 광고 계정, 사전 신청 페이지, 픽셀'),
+ T('기반','기획·운영 (미디어볼 월 고정)','blue',R('C','AG'),true),
+ T('기반','홍보 성과 보고','green',L('K','O','T','X','AC','AG'),false,'월 1회, 비용은 기획·운영에 포함'),
+ T('콘텐츠','유튜브 롱폼 제작','blue',[...R('C','E'),...L('J','L','N','P','R','T','V','X','Z','AB','AD')],true,'첫 3편 12일, 이후 격주 1편 가정'),
+ T('콘텐츠','유튜브 롱폼 업로드','green',L('E','F','G','K','M','O','Q','S','U','W','Y','AA','AC','AE'),false),
+ T('콘텐츠','숏폼 제작','blue',R('F','G'),true,'4개 × 2일'),
+ T('콘텐츠','숏폼·SNS 업로드','green',R('E','AG'),true),
+ T('PR·광고','광고 기획','blue',R('C','D'),true),
+ T('PR·광고','광고 촬영','blue',L('D'),true,'제주 콘텐츠 촬영 때 함께'),
+ T('PR·광고','광고 편집·입고','blue',R('F','I'),true),
+ T('PR·광고','오픈용 광고 제작','blue',R('W','Z'),true,'리뉴얼 공사 일정 확인 후 조정'),
+ T('PR·광고','유튜브·메타 광고','yel',R('H','AF'),true,'1월 소액 → 2월 판매 본격 → 4~5월 집중'),
+ T('PR·광고','공항광고 계약·심의','blue',R('I','K'),true),
+ T('PR·광고','공항광고 게재','yel',R('L','AB'),true,'김포공항 무빙워크 등, 단가 입력 예정'),
+ T('PR·광고','보도자료 작성·발송','green',L('L','AC'),true),
+ T('행사·체험','펫박람회 참가 검토','blue',R('H','I'),true),
+ T('행사·체험','인플루언서 체험','yel',R('AA','AD'),true),
+ T('행사·체험','프리오픈 초청','green',R('AB','AC'),true),
+ T('행사·체험','일반 예약 프로모션','yel',R('AD','AG'),true)].map((t,i)=>({...t,id:'t'+String(i).padStart(2,'0'),order:i}));
+const D=(cat,title,detail,status='pending',by='')=>({cat,title,detail,status,confirmedBy:by,createdAt:Date.now(),from:'미디어볼',to:'푸만'});
+const SEED_DEC=[
+ D('회원권','등급별 가격과 보증금','Founders 300 · Standard 800 · Premium 300 구좌별 금액'),
+ D('회원권','회원 혜택','연간 숙박 일수, 성수기 예약 규칙'),
+ D('회원권','1,400구좌 판매 목표','오픈 전에 전부 판매하는 것이 목표인지'),
+ D('회원권','5년 보증금형 광고 문구','"원금 반환" 같은 표현을 쓰기 전 법률 검토 여부'),
+ D('범위','분양 영업 조직','분양 영업팀이나 분양 대행사가 따로 있는지'),
+ D('범위','미디어볼 업무 범위','기획만 / 광고 운영까지 / 상담·설명회까지'),
+ D('범위','계약·정산 방식','매체비 결제 주체(법인 카드 직접 결제 등)'),
+ D('예산','전체 예산 규모','최소안·적정안·공격안 기준을 잡을 금액'),
+ D('예산','공항광고 게재 기간','판매 기간(2~5월) 전체인지, 오픈 직전 집중인지'),
+ D('일정','정확한 오픈일','5~6월 중 날짜'),
+ D('일정','리뉴얼 공사 일정','오픈용 광고 촬영 시기를 맞추기 위해'),
+ D('일정','1층 B안 확정 여부','객실 한 줄을 F&B·편집숍으로 바꾸는 안과 최종 객실 수'),
+ D('기타','로고·브랜드 가이드','이미 있는지, 새로 만들어야 하는지'),
+ D('일정','회원권 판매 2027년 2월 시작','카톡 11/25','confirmed','카톡 확인'),
+ D('일정','오픈 2027년 5~6월','카톡 11/23, 11/25','confirmed','카톡 확인'),
+ D('범위','회원권 분양·홍보 기획·예산·스케줄 미디어볼 일임','카톡 11/25','confirmed','카톡 확인'),
+ D('예산','공항 옥외광고 비용 조사 포함','김포공항 무빙워크 우선, 국내 주요 공항','confirmed','카톡 확인')].map((d,i)=>({...d,id:'d'+String(i).padStart(2,'0'),createdAt:i}));
+const SEED_TIERS=[{name:'Founders',qty:300,price:'',sold:0,benefit:''},{name:'Standard',qty:800,price:'',sold:0,benefit:''},{name:'Premium',qty:300,price:'',sold:0,benefit:''}];
+const SEED_SET={openDate:'',saleDate:'',scenMin:'',scenAgg:'',tiers:SEED_TIERS,memberNote:'5년 보증금형 (사업·공간 레퍼런스 v2 기획안 기준)'};
+const DOC_CATS=['리서치','기획','예산','회의','기타'];
+const SEED_DOCS=[{id:'k00',title:'PUMAN JEJU 확정 사항 정리',cat:'기획',body:"# PUMAN IN JEJU 회원권·홍보 기획 — 확정 사항 정리\n\n- 작성: 2026-11-25\n- 기준: 카톡(2026-11-23, 11-25), 공유 자료 2종(사업·공간 레퍼런스 v2, 인테리어 디자인북 2026.10)\n- 이 문서에는 위 출처에서 확인된 내용만 넣었습니다. 기획 페이지의 예시 숫자(CPA 2만 원, 구매 비율 10% 등)는 가정이라 제외했습니다.\n\n---\n\n## 1. 결정 사항\n\n| 항목 | 내용 | 출처 |\n|---|---|---|\n| 업무 위임 | 리조트 회원권 분양과 홍보의 기획·예산·스케줄을 배감독(미디어볼)에게 일임. \"이번 프로젝트부터 함께 갈 생각\" | 카톡 11-25 |\n| 수락 | \"부족하지만 맡겨주신다면 열심히 잘 해보겠습니다\"로 수락 | 카톡 11-25 |\n| 오픈 시기 | 2027년 5~6월 | 카톡 11-23, 11-25 |\n| 회원권 판매 시작 | 2027년 2월 | 카톡 11-25 |\n| 공항 광고 조사 | 김포공항 무빙워크 광고판 비용 조사 요청 → 김포 및 국내 주요 공항 OOH 비용을 확인해 기획안에 넣기로 함 | 카톡 11-25 |\n| 1차 공유 | 기획안을 이번 주말(11월 28~29일)쯤 공유하기로 함 | 카톡 11-25 |\n| 완료된 일 | 킨텍스 메가주 답사 후 부스 구성·향후 이벤트 방안 정리해 전달 | 대화 11-23 |\n\n### 자료에서 확인된 사업 기본 정보\n\n자료에 \"기획안\"으로 적혀 있어 바뀔 수 있는 내용입니다.\n\n| 항목 | 내용 |\n|---|---|\n| 사업 | 제주 애월 반려동물 동반 라이프스타일 리조트, 기존 건물 리뉴얼형 |\n| 객실 | 97실 (Studio 30.33㎡ 76실 / Two-Room 55.53㎡ 19실 / Grand Two-Room 111.06㎡ 2실) |\n| 멤버십 기획안 | Founders 300 · Standard 800 · Premium 300 = 총 1,400구좌, 5년 보증금형 |\n| 고객 구조 | 멤버십 고객 / 일반 숙박 고객 / 로컬·데이유즈 / 반려동물 서비스 이용 고객 |\n| 주요 시설 | B1 그루밍·스파·유치원·위탁호텔·건강관리·편의점 / 1F 로비·F&B·편집숍(B안) / 옥상 F&B 70석·피트니스·도가·회원 전용 도서관 / 대형견·중소형견 분리 운동장 |\n\n---\n\n## 2. 예산 항목\n\n리조트 측이 직접 요청한 항목은 하나이고, 나머지는 기획 단계에서 정리한 구성안입니다. 리조트 측 승인 전입니다.\n\n| 항목 | 상태 | 비고 |\n|---|---|---|\n| 공항 옥외광고(OOH) | **리조트 측 요청 항목** | 김포공항 무빙워크 우선, 국내 주요 공항 포함 |\n| 콘텐츠 제작비 | 구성안 | 리뉴얼 연재 영상, 숏폼, 사진, 디자인, 소개 페이지 |\n| 광고 집행비 | 구성안 | 유튜브·인스타 광고, 리타겟팅 |\n| 오프라인비 | 구성안 | 박람회 부스, 설명회, 그랜드 오픈 행사 |\n| 협업비 | 구성안 | 인플루언서, 제휴 |\n| 기획·운영비 | 구성안 | 미디어볼 몫, 별도 항목으로 표기 |\n| 예비비 | 구성안 | 전체의 10% 안팎 |\n\n---\n\n## 3. 금액\n\n**확정된 금액은 없습니다.**\n\n- 전체 예산 규모: 미정\n- 항목별 금액: 미정\n- 공항 광고 단가: 조사 전\n- 회원권 가격·보증금: 미정\n\n---\n\n## 4. 미정 사항 (리조트 측에 확인 필요)\n\n### 회원권\n- [ ] 등급별(Founders / Standard / Premium) 가격과 보증금\n- [ ] 회원 혜택: 연간 숙박 일수, 성수기 예약 규칙\n- [ ] 1,400구좌를 오픈 전에 다 판매하는 게 목표인지\n- [ ] 5년 보증금형 광고 문구에 대한 법률 검토 여부\n\n### 범위·조직\n- [ ] 분양 영업팀이나 분양 대행사가 따로 있는지\n- [ ] 미디어볼이 맡는 범위 (기획만 / 광고 운영까지 / 상담·설명회까지)\n- [ ] 계약·정산 방식, 매체비 결제 주체\n\n### 예산\n- [ ] 전체 예산 규모 (최소안·적정안·공격안 기준을 잡을 숫자)\n- [ ] 공항 OOH 실제 단가와 계약 기간\n\n### 시설·일정\n- [ ] 리뉴얼 공사 일정\n- [ ] 1층 B안(객실 한 줄을 F&B·편집숍으로 전환) 확정 여부와 최종 객실 수\n- [ ] 로고·브랜드 가이드 유무\n",link:'',from:'',createdAt:Date.parse('2026-11-25T15:13:00+09:00')}];
+const CHANNELS=['유튜브','인스타','광고','기타'];
+const FORMATS=['롱폼','숏폼','게시글','광고 영상','광고 이미지','보도자료','기타'];
+const OLD={'유튜브 롱폼':[['유튜브'],'롱폼'],'숏폼':[['유튜브','인스타'],'숏폼'],'인스타 게시글':[['인스타'],'게시글'],'광고 소재':[['광고'],'광고 영상'],'기타':[['기타'],'보도자료']};
+const norm=c=>c.channels?c:{...c,channels:(OLD[c.type]||[['기타']])[0],format:(OLD[c.type]||[0,'기타'])[1]};
+const STATUS=['기획','진행','완료'];
+const C=(type,title,due)=>norm({type,title,status:'기획',due});
+const SEED_CON=[
+ C('유튜브 롱폼','롱폼 1화 · 왜 이 리조트를 짓나 (가제)','2026-12-14'),
+ C('유튜브 롱폼','롱폼 2화 · 리뉴얼 전 공간 투어 (가제)','2026-12-21'),
+ C('유튜브 롱폼','롱폼 3화 · 원장님이 그리는 푸만 (가제)','2026-12-28'),
+ C('숏폼','숏폼 1 (가제)','2026-12-24'),C('숏폼','숏폼 2 (가제)','2026-12-28'),C('숏폼','숏폼 3 (가제)','2026-12-31'),C('숏폼','숏폼 4 (가제)','2027-01-03'),
+ C('인스타 게시글','게시글 1 · 계정 소개 (가제)','2026-12-14'),C('인스타 게시글','게시글 2 · 3D 렌더 티저 (가제)','2026-12-16'),C('인스타 게시글','게시글 3 (가제)','2026-12-18'),
+ C('인스타 게시글','게시글 4 (가제)','2026-12-21'),C('인스타 게시글','게시글 5 (가제)','2026-12-23'),C('인스타 게시글','게시글 6 (가제)','2026-12-26'),
+ C('광고 소재','회원권 판매 광고 소재 (가제)','2027-01-24'),
+ C('기타','보도자료 · 회원권 판매 시작 (가제)','2027-02-01')].map((c,i)=>({...c,id:'c'+String(i).padStart(2,'0'),createdAt:i}));
+
+// ---------- 저장소: Firebase 또는 미리보기(이 브라우저) ----------
+const CFG=window.PUMAN_CONFIG; let S={settings:{...SEED_SET},decisions:[],tasks:[],contents:[],docs:[]};
+let me={name:'미디어볼',email:'',role:'admin',id:'미디어볼'}; let api; let LOCAL=true;
+// 결정·자료는 개인이 아니라 소속(미디어볼 / 푸만) 단위로 주고받는다
+const ORGS=()=>LOCAL?['미디어볼','푸만']:(CFG.orgs||['미디어볼','푸만']);
+const orgOf=em=>{const n=(CFG&&CFG.names)||{};const k=Object.keys(n).find(x=>x.toLowerCase()===em);return k?n[k]:''};
+const PEOPLE=ORGS;
+const nameOf=id=>({'호정':'미디어볼','현우':'푸만','형님':'푸만'})[id]||id||'';
+const ADMIN0=()=>LOCAL?'미디어볼':(orgOf((CFG.admins||[''])[0].toLowerCase())||ORGS()[0]);
+const MEMBER0=()=>ORGS().find(o=>o!==ADMIN0())||'푸만';
+const normD=d=>d.to?{...d,from:nameOf(d.from),to:nameOf(d.to)}:{...d,from:ADMIN0(),to:MEMBER0()};
+const draw=()=>route();
+function localApi(){
+  const KEY='puman-hq-preview-v1';
+  try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S=v}catch(e){}
+  if(!S.tasks.length){S={settings:{...SEED_SET},decisions:SEED_DEC,tasks:SEED_TASKS,contents:SEED_CON,docs:SEED_DOCS}}
+  if(!S.contents)S.contents=SEED_CON;
+  if(!S.docs)S.docs=SEED_DOCS;
+  S.decisions.forEach(d=>{['from','to'].forEach(k=>{d[k]=nameOf(d[k])});if(d.confirmedBy)d.confirmedBy=d.confirmedBy.replace(/^(형님|현우|호정) 확인$/,m=>({'형님 확인':'푸만 확인','현우 확인':'푸만 확인','호정 확인':'미디어볼 확인'})[m])});(S.docs||[]).forEach(k=>{if(k.from)k.from=nameOf(k.from)});
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};draw()};
+  return{
+    setSettings:p=>{Object.assign(S.settings,p);save()},
+    addDecision:d=>{S.decisions.push({...d,id:'d'+Date.now(),createdAt:Date.now()});save()},
+    updateDecision:(id,p)=>{Object.assign(S.decisions.find(d=>d.id===id),p);save()},
+    deleteDecision:id=>{S.decisions=S.decisions.filter(d=>d.id!==id);save()},
+    setCell:(tid,w,v)=>{const t=S.tasks.find(x=>x.id===tid);if(v===null)delete t.cells[w];else t.cells[w]=v;save()},
+    addContent:c=>{S.contents.push({...c,id:'c'+Date.now(),createdAt:Date.now()});save()},
+    updateContent:(id,p)=>{Object.assign(S.contents.find(c=>c.id===id),p);save()},
+    deleteContent:id=>{S.contents=S.contents.filter(c=>c.id!==id);save()},
+    addDoc:d=>{const id='k'+Date.now();S.docs.push({...d,id,createdAt:Date.now()});save();return id},
+    updateDoc:(id,p)=>{Object.assign(S.docs.find(c=>c.id===id),p);save()},
+    deleteDoc:id=>{S.docs=S.docs.filter(c=>c.id!==id);save()},
+    reset:()=>{try{localStorage.removeItem(KEY)}catch(e){};S={settings:{...SEED_SET},decisions:SEED_DEC,tasks:SEED_TASKS,contents:SEED_CON,docs:SEED_DOCS};draw()}
+  };
+}
+async function fireApi(){
+  const V='10.12.2',B=`https://www.gstatic.com/firebasejs/${V}/`;
+  const [{initializeApp},A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+  const app=initializeApp(CFG.firebase),auth=A.getAuth(app),db=F.getFirestore(app);
+  const admins=(CFG.admins||[]).map(s=>s.toLowerCase()),members=(CFG.members||[]).map(s=>s.toLowerCase());
+  return new Promise(res=>{
+    A.onAuthStateChanged(auth,async u=>{
+      if(!u){showLogin(()=>A.signInWithPopup(auth,new A.GoogleAuthProvider()));return}
+      const em=(u.email||'').toLowerCase();
+      if(!admins.includes(em)&&!members.includes(em)){showDenied(em,()=>A.signOut(auth));return}
+      me={name:orgOf(em)||em,email:em,id:orgOf(em)||em,role:admins.includes(em)?'admin':'member',logout:()=>A.signOut(auth)};
+      const c=n=>F.collection(db,n);
+      F.onSnapshot(F.doc(db,'settings','main'),s=>{S.settings={...SEED_SET,...(s.data()||{})};draw()});
+      F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
+      F.onSnapshot(c('docs'),q=>{S.docs=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
+      F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
+      F.onSnapshot(c('tasks'),q=>{S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);draw()});
+      res({
+        setSettings:p=>F.setDoc(F.doc(db,'settings','main'),p,{merge:true}),
+        addDecision:d=>F.addDoc(c('decisions'),{...d,createdAt:Date.now()}),
+        updateDecision:(id,p)=>F.updateDoc(F.doc(db,'decisions',id),p),
+        deleteDecision:id=>F.deleteDoc(F.doc(db,'decisions',id)),
+        addContent:d=>F.addDoc(c('contents'),{...d,createdAt:Date.now()}),
+        addDoc:async d=>(await F.addDoc(c('docs'),{...d,createdAt:Date.now()})).id,
+        updateDoc:(id,p)=>F.updateDoc(F.doc(db,'docs',id),p),
+        deleteDoc:id=>F.deleteDoc(F.doc(db,'docs',id)),
+        updateContent:(id,p)=>F.updateDoc(F.doc(db,'contents',id),p),
+        deleteContent:id=>F.deleteDoc(F.doc(db,'contents',id)),
+        setCell:(tid,w,v)=>F.updateDoc(F.doc(db,'tasks',tid),{['cells.'+w]:v===null?F.deleteField():v}),
+        seed:async()=>{const b=F.writeBatch(db);SEED_TASKS.forEach(t=>{const{id,...r}=t;b.set(F.doc(db,'tasks',id),r)});SEED_DEC.forEach(d=>{const{id,...r}=normD(d);b.set(F.doc(db,'decisions',id),r)});SEED_DOCS.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'docs',id),{...r,from:ADMIN0()})});SEED_CON.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'contents',id),r)});b.set(F.doc(db,'settings','main'),SEED_SET,{merge:true});await b.commit()}
+      });
+    });
+  });
+}
+const app=document.getElementById('app');
+function showLogin(go){app.innerHTML=`<div class="login card"><h1>PUMAN 오픈 준비</h1><p class="sub">허용된 구글 계정으로 로그인해 주세요.</p><p><button class="btn" id="go">구글 계정으로 로그인</button></p></div>`;app.querySelector('#go').onclick=go}
+function showDenied(em,out){app.innerHTML=`<div class="login card"><h1>접근 권한이 없어요</h1><p class="sub">${esc(em)} 계정은 아직 허용 명단에 없습니다. 관리자에게 추가를 요청해 주세요.</p><p><button class="btn ghost" id="out">다른 계정으로 로그인</button></p></div>`;app.querySelector('#out').onclick=out}
+
+// ---------- 계산 ----------
+const costTasks=()=>S.tasks.filter(t=>t.cost);
+const rowSum=t=>Object.values(t.cells||{}).reduce((a,b)=>a+(+b||0),0);
+const weekSum=w=>costTasks().reduce((a,t)=>a+(+(t.cells||{})[w]||0),0);
+const total=()=>costTasks().reduce((a,t)=>a+rowSum(t),0);
+const groupSum=g=>costTasks().filter(t=>t.g===g).reduce((a,t)=>a+rowSum(t),0);
+const monthSum=([,a,b])=>{let s=0;for(let w=a;w<=b;w++)s+=weekSum(w);return s};
+const isAdmin=()=>me.role==='admin';
+
+// ---------- 공통 머리 ----------
+function shell(tab,body){
+  const local=LOCAL;
+  app.innerHTML=`<header><div class="brand"><b>PUMAN IN JEJU</b></div>
+  <nav><a href="#dashboard" class="${tab==='dashboard'?'on':''}">대시보드</a><a href="#plan" class="${tab==='plan'?'on':''}">기획·예산</a><a href="#content" class="${tab==='content'?'on':''}">홍보·콘텐츠</a><a href="#member" class="${tab==='member'?'on':''}">회원권</a><a href="#docs" class="${tab==='docs'?'on':''}">자료</a></nav>
+  <div class="who">${local?`<label for="role">보는 사람</label><select id="role"><option value="admin">미디어볼 (관리)</option><option value="member">푸만 (확인)</option></select><button id="reset" title="미리보기 데이터를 처음 상태로">초기화</button>`:`<span>${esc(me.name)} · ${isAdmin()?'관리':'확인'}</span><button id="out">로그아웃</button>`}</div></header>
+  ${local?`<div class="mode">미리보기 모드예요. 입력한 내용은 이 브라우저에만 저장됩니다. Firebase를 연결하면 함께 쓰는 사람 모두가 같은 내용을 보고 고칠 수 있어요.</div>`:''}
+  ${!local&&!S.tasks.length&&isAdmin()?`<div class="mode">아직 데이터가 없어요. <button class="btn" id="seed">기본 일정·결정 목록 불러오기</button></div>`:''}${body}`;
+  const r=app.querySelector('#role');if(r){r.value=me.role;r.onchange=()=>{me.role=r.value;me.id=me.role==='admin'?'미디어볼':'푸만';me.name=me.id;decBox='';draw()}}
+  const rs=app.querySelector('#reset');if(rs)rs.onclick=()=>api.reset();
+  const o=app.querySelector('#out');if(o)o.onclick=()=>me.logout();
+  const sd=app.querySelector('#seed');if(sd)sd.onclick=()=>api.seed();
+}
+
+// ---------- 대시보드 ----------
+function dash(){
+  const st=S.settings,od=dday(st.openDate),sd=dday(st.saleDate),tot=total();
+  const D=S.decisions.map(normD);
+  const pend=D.filter(d=>d.status!=='confirmed').sort((a,b)=>a.createdAt-b.createdAt);
+  const done=D.filter(d=>d.status==='confirmed').sort((a,b)=>(b.confirmedAt||0)-(a.confirmedAt||0));
+  const mine=pend.filter(d=>d.to===me.id),sent=pend.filter(d=>d.from===me.id),others=pend.filter(d=>d.to!==me.id&&d.from!==me.id);
+  const PL=PEOPLE().slice().sort((a,b)=>(a===MEMBER0()?-1:0)-(b===MEMBER0()?-1:0));
+  const tabId=PL.includes(decBox)?decBox:me.id;
+  const box=pend.filter(d=>d.to===tabId);
+  const docOf=id=>(S.docs||[]).filter(k=>k.link===id);
+  const w=curWeek(),before=new Date()<START;
+  const curM=MONTHS.find(m=>w>=m[1]&&w<=m[2])||MONTHS[0];
+  const wk=S.tasks.filter(t=>(t.cells||{})[w]!==undefined);
+  const dd=(v,s,emptyTxt)=>v===null?`<div class="big">날짜 미정</div><div class="sub">${emptyTxt}</div>`:`<div class="big">${v>0?'D-'+v:v===0?'D-DAY':'D+'+(-v)}</div><div class="sub">${fdate(s)}</div>`;
+  const dateIn=(k,v)=>isAdmin()?`<input class="date" type="date" id="${k}" value="${esc(v)}" aria-label="날짜 선택">`:'';
+  const gcol=GC;
+  const stack=tot?GROUPS.slice(1).map(g=>`<i style="width:${groupSum(g)/tot*100}%;background:${gcol[g]}" title="${g}"></i>`).join(''):'';
+  shell('dashboard',`
+  <section class="grid4">
+   <div class="card"><h3>오픈까지</h3>${dd(od,st.openDate,'5~6월 중, 달력에서 정해주세요')}${dateIn('openDate',st.openDate)}</div>
+   <div class="card"><h3>회원권 판매 시작까지</h3>${dd(sd,st.saleDate,'2027년 2월 중')}${dateIn('saleDate',st.saleDate)}</div>
+   <div class="card bsplit"><div><h3>${curM[0]} 예산</h3><div class="mid">${monthSum(curM)?fmt(monthSum(curM))+'<small> 만원</small>':'–'}</div></div>
+    <div><h3>전체 기획 예산 (12월~6월)</h3><div class="mid">${tot?fmt(tot)+'<small> 만원</small>':'입력 전'}</div><div class="sub">${tot?'예비비 10% 포함 '+fmt(tot*1.1)+'만원':'기획·예산 탭에서 주별 금액을 넣어요'}</div><div class="stack">${stack}</div></div></div>
+   <div class="card"><h3>내가 확인할 것</h3><div class="big">${mine.length}<span style="font-size:15px;font-weight:600"> 건</span></div><div class="sub">답 기다리는 것 ${sent.length}건 · 확정 ${done.length}건</div></div>
+  </section>
+  <section class="row2">
+   <div class="card"><div class="head"><h2>결정할 것</h2><p class="sub">받은 사람이 체크하면 확정됨으로 옮겨져요</p></div>
+    <div class="seg dseg" role="tablist">${PL.map(p=>{const n=pend.filter(d=>d.to===p).length;return `<button data-box="${esc(p)}" class="${tabId===p?'on':''}">${esc(nameOf(p))} 확인 대기 ${n}${p===me.id&&n?'<i class="turn">내 차례</i>':''}</button>`}).join('')}</div>
+    ${box.length?`<ul class="dec">${box.map(d=>{const canOk=d.to===me.id,canDel=isAdmin()||d.from===me.id,ks=docOf(d.id);return `<li>${canOk?`<input type="checkbox" data-ok="${esc(d.id)}" aria-label="${esc(d.title)} 확인">`:`<span class="wait" title="받은 사람이 확인해야 해요">…</span>`}${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="dir">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))}${ks.map(k=>` · <a href="#docs" data-open="${esc(k.id)}">근거 자료: ${esc(k.title)}</a>`).join('')}</div></div>`}${canDel?`<button class="x" data-del="${esc(d.id)}" aria-label="삭제">삭제</button>`:'<span></span>'}</li>`}).join('')}</ul>`:`<p class="empty">${esc(nameOf(tabId))} 확인 대기 항목이 없어요.</p>`}
+    <form class="add" id="addf"><select id="ncat" aria-label="분류">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input id="nt" placeholder="물어볼 것 (예: 공항광고 게재 기간)" aria-label="제목" required><select id="nto" aria-label="받는 사람">${PEOPLE().filter(p=>p!==me.id).map(p=>`<option value="${esc(p)}">${esc(nameOf(p))} 확인 요청</option>`).join('')}</select><button class="btn">추가</button><textarea id="nd" placeholder="확인해야 할 부분 (선택)" aria-label="확인할 부분"></textarea></form>
+    <details class="done"${done.length?'':' hidden'}${done.some(d=>d.id===editDec)||doneOpen?' open':''}><summary>확정됨 ${done.length}건</summary><ul class="dec">${done.map(d=>`<li><span aria-hidden="true" style="color:var(--ok);font-weight:700">✓</span>${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="by">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))} · ${esc(d.confirmedBy||'')}${d.confirmedAt?' · '+md(new Date(d.confirmedAt)):''}</div></div>`}${isAdmin()||d.to===me.id?`<button class="x" data-undo="${esc(d.id)}">되돌리기</button>`:'<span></span>'}</li>`).join('')}</ul></details>
+   </div>
+   <div class="card"><div class="head"><h2>${before?'첫 주':'이번 주'} 할 일</h2><p class="sub">${md(wd(w))} ~ ${md(new Date(wd(w).getTime()+6*864e5))}</p></div>
+    ${wk.length?`<ul class="week">${wk.map(t=>`<li><span class="dot" style="background:${GC[t.g]}"></span><span>${esc(t.name)}</span></li>`).join('')}</ul>`:`<p class="empty">이번 주에 걸린 업무가 없어요.</p>`}
+    <p class="sub" style="margin-top:12px">기획·예산 탭의 간트에서 자동으로 가져와요.</p>
+   </div>
+  </section>`);
+  ['openDate','saleDate'].forEach(k=>{const e=app.querySelector('#'+k);if(e)e.onchange=()=>api.setSettings({[k]:e.value})});
+  app.querySelectorAll('[data-ok]').forEach(e=>e.onchange=()=>api.updateDecision(e.dataset.ok,{status:'confirmed',confirmedAt:Date.now(),confirmedBy:nameOf(me.id)+' 확인'}));
+  app.querySelectorAll('[data-box]').forEach(b=>b.onclick=()=>{decBox=b.dataset.box;editDec=null;draw()});
+  const dt=app.querySelector('details.done');if(dt)dt.ontoggle=()=>{doneOpen=dt.open};
+  app.querySelectorAll('[data-ed]').forEach(e=>e.onclick=ev=>{if(ev.target.closest('a'))return;editDec=e.dataset.ed;draw();const f=app.querySelector('.dedit input[name=title]');if(f){f.focus();f.select()}});
+  app.querySelectorAll('.dedit').forEach(f=>{f.onsubmit=ev=>{ev.preventDefault();const id=f.dataset.def,fd=new FormData(f);editDec=null;api.updateDecision(id,{cat:fd.get('cat'),title:String(fd.get('title')).trim()||'제목 없음',detail:String(fd.get('detail')).trim(),to:fd.get('to')})};
+    f.querySelector('[data-cancel]').onclick=()=>{editDec=null;draw()};f.onkeydown=e=>{if(e.key==='Escape'){editDec=null;draw()}}});
+  app.querySelectorAll('[data-open]').forEach(a=>a.onclick=()=>{openDoc=a.dataset.open});
+  app.querySelectorAll('[data-del]').forEach(e=>e.onclick=()=>armDelete(e,()=>api.deleteDecision(e.dataset.del)));
+  app.querySelectorAll('[data-undo]').forEach(e=>e.onclick=()=>api.updateDecision(e.dataset.undo,{status:'pending',confirmedAt:null,confirmedBy:''}));
+  const f=app.querySelector('#addf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#nt').value.trim();if(!t)return;decBox=f.querySelector('#nto').value;api.addDecision({cat:f.querySelector('#ncat').value,title:t,detail:f.querySelector('#nd').value.trim(),status:'pending',confirmedBy:'',from:me.id,to:f.querySelector('#nto').value})};
+}
+let doneOpen=false,decBox='',openDoc=null,editDec=null,editCon=null;
+const decForm=d=>`<form class="dedit" data-def="${esc(d.id)}"><div class="r"><select name="cat" aria-label="분류">${CATS.map(c=>`<option${c===d.cat?' selected':''}>${c}</option>`).join('')}</select><input name="title" value="${esc(d.title)}" aria-label="제목" required><select name="to" aria-label="받는 사람">${PEOPLE().filter(p=>p!==d.from).map(p=>`<option value="${esc(p)}"${p===d.to?' selected':''}>${esc(nameOf(p))} 확인 요청</option>`).join('')}</select></div><textarea name="detail" aria-label="확인할 부분" placeholder="확인해야 할 부분 (선택)">${esc(d.detail||'')}</textarea><div class="acts"><button class="btn">저장</button><button type="button" class="btn ghost" data-cancel>취소</button></div></form>`;
+const canEditDec=d=>isAdmin()||d.from===me.id;
+function armDelete(btn,fn){if(btn.dataset.arm){fn();return}btn.dataset.arm=1;btn.textContent='한 번 더 누르면 삭제';btn.style.color='var(--rose)';setTimeout(()=>{if(btn.isConnected){delete btn.dataset.arm;btn.textContent='삭제';btn.style.color=''}},3000)}
+
+// ---------- 기획·예산 ----------
+function plan(){
+  const st=S.settings,tot=total(),w0=curWeek();
+  const msSet=new Set(MONTHS.map(m=>m[1]));
+  const head1=MONTHS.map(([m,a,b])=>`<th colspan="${b-a+1}" class="ms">${m}</th>`).join('');
+  const head2=Array.from({length:NW},(_,i)=>`<th class="${msSet.has(i)?'ms':''}">${i-MONTHS.find(m=>i>=m[1]&&i<=m[2])[1]+1}주<br>${md(wd(i))}</th>`).join('');
+  let rows='';
+  GROUPS.forEach(g=>{
+    const ts=S.tasks.filter(t=>t.g===g);if(!ts.length)return;
+    rows+=`<tr class="grp"><td class="nm">${g}</td><td colspan="${NW}"></td><td class="tot">${groupSum(g)?fmt(groupSum(g)):''}</td></tr>`;
+    ts.forEach(t=>{
+      rows+=`<tr><td class="nm" title="${esc(t.note||t.name)}">${esc(t.name)}</td>`+Array.from({length:NW},(_,i)=>{
+        const v=(t.cells||{})[i],on=v!==undefined;
+        const cls=['c',msSet.has(i)?'ms':'',isAdmin()?'ed':'',!on&&i===w0?'now':''].join(' ');
+        return `<td class="${cls}" data-t="${esc(t.id)}" data-w="${i}" style="${on?'background:'+GC[t.g]+';color:'+GT[t.g]:''}">${on&&t.cost&&+v>0?fmt(v):''}</td>`}).join('')+
+        `<td class="tot">${t.cost?(rowSum(t)?fmt(rowSum(t)):'–'):''}</td></tr>`;
+    });
+  });
+  const foot=`<tr><td class="nm">주별 합계 (만원)</td>${Array.from({length:NW},(_,i)=>`<td class="${msSet.has(i)?'ms':''}">${weekSum(i)?fmt(weekSum(i)):''}</td>`).join('')}<td class="tot">${tot?fmt(tot):'–'}</td></tr>
+   <tr><td class="nm">월별 합계 (만원)</td>${MONTHS.map(m=>`<td colspan="${m[2]-m[1]+1}" class="ms">${monthSum(m)?fmt(monthSum(m)):'–'}</td>`).join('')}<td class="tot">${tot?fmt(tot):'–'}</td></tr>`;
+  const gcol=GC;
+  const gmax=Math.max(1,...GROUPS.slice(1).map(groupSum)),mmax=Math.max(1,...MONTHS.map(monthSum));
+  const scenIn=(k,v)=>isAdmin()?`<input id="${k}" inputmode="numeric" value="${esc(v)}" placeholder="총액 입력" aria-label="총액(만원)">`:`<b>${v?fmt(v):'–'}</b>`;
+  shell('plan',`
+  <section class="sum">
+   <div class="card"><h3>업무 합계</h3><div class="big">${tot?fmt(tot):'–'}</div><div class="sub">만원</div></div>
+   <div class="card"><h3>예비비 10%</h3><div class="big">${tot?fmt(tot*.1):'–'}</div><div class="sub">만원</div></div>
+   <div class="card"><h3>총계</h3><div class="big">${tot?fmt(tot*1.1):'–'}</div><div class="sub">만원</div></div>
+   <div class="card"><h3>3안 비교 (총액, 만원)</h3><div class="scen">
+     <div><label for="scenMin">최소안</label>${scenIn('scenMin',st.scenMin)}</div>
+     <div><label>적정안 · 현재</label><b>${tot?fmt(tot*1.1):'–'}</b></div>
+     <div><label for="scenAgg">공격안</label>${scenIn('scenAgg',st.scenAgg)}</div></div></div>
+  </section>
+  <div class="card"><div class="head"><h2>홍보 일정과 주별 금액</h2><p class="sub">${isAdmin()?'칸을 눌러 일정을 넣고 금액(만원)을 적어요. 0이면 일정만 표시돼요.':'금액 단위는 만원이에요.'}</p></div>
+   <div class="gwrap"><table class="g"><thead><tr><th class="nm" rowspan="2">업무</th>${head1}<th class="tot" rowspan="2">합계</th></tr><tr>${head2}</tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>
+   <div class="legend">${GROUPS.map(g=>`<span><i class="dot" style="background:${GC[g]}"></i>${g}</span>`).join('')}<span>· 분홍 세로줄: 이번 주</span></div>
+  </div>
+  <section class="row3">
+   <div class="card"><div class="head"><h2>구분별 금액</h2></div>${tot?GROUPS.slice(1).map(g=>`<div class="hb"><span>${g}</span><div class="bar"><i style="width:${groupSum(g)/gmax*100}%;background:${gcol[g]}"></i></div><b>${fmt(groupSum(g))}만 · ${Math.round(groupSum(g)/tot*100)}%</b></div>`).join(''):`<p class="empty">간트에 금액을 넣으면 구분별 막대가 그려져요.</p>`}</div>
+   <div class="card"><div class="head"><h2>월별 지출</h2><p class="sub">만원</p></div>${tot?`<div class="vb">${MONTHS.map(m=>`<div><b>${monthSum(m)?fmt(monthSum(m)):''}</b><i style="height:${monthSum(m)/mmax*100}%"></i><span>${m[0]}</span></div>`).join('')}</div>`:`<p class="empty">간트에 금액을 넣으면 월별 막대가 그려져요.</p>`}</div>
+  </section>
+  <div class="card" style="margin-top:12px"><div class="head"><h2>업무별 금액</h2><p class="sub">비용이 드는 업무만</p></div>
+   <div style="overflow-x:auto"><table class="t"><thead><tr><th>구분</th><th>업무</th><th>메모</th><th class="n">금액(만원)</th><th class="n">비중</th></tr></thead>
+   <tbody>${costTasks().map(t=>`<tr><td>${esc(t.g)}</td><td>${esc(t.name)}</td><td style="color:var(--mute);font-size:13px">${esc(t.note)}</td><td class="n">${rowSum(t)?fmt(rowSum(t)):'–'}</td><td class="n">${tot?Math.round(rowSum(t)/tot*100)+'%':'–'}</td></tr>`).join('')}</tbody>
+   <tfoot><tr><td></td><td>합계</td><td></td><td class="n">${tot?fmt(tot):'–'}</td><td class="n">${tot?'100%':''}</td></tr></tfoot></table></div></div>`);
+  ['scenMin','scenAgg'].forEach(k=>{const e=app.querySelector('#'+k);if(e)e.onchange=()=>api.setSettings({[k]:e.value.replace(/[^\d.]/g,'')})});
+  if(isAdmin())app.querySelectorAll('td.c.ed').forEach(td=>td.onclick=()=>cellEdit(td));
+}
+function cellEdit(td){
+  const t=S.tasks.find(x=>x.id===td.dataset.t),w=+td.dataset.w,v=(t.cells||{})[w];
+  if(!t.cost){api.setCell(t.id,w,v===undefined?1:null);return}
+  const root=document.getElementById('popRoot'),r=td.getBoundingClientRect();
+  root.innerHTML=`<div class="pop" role="dialog" aria-label="금액 입력"><p>${esc(t.name)} · ${md(wd(w))} 주</p><input id="pv" inputmode="numeric" placeholder="금액 (만원)" value="${v!==undefined&&+v>0?esc(v):''}" aria-label="금액(만원)"><div class="acts"><button class="btn" id="pok">저장</button>${v!==undefined?'<button class="btn ghost" id="pdel">일정 빼기</button>':''}<button class="btn ghost" id="pno">취소</button></div></div>`;
+  const p=root.firstChild;const x=Math.min(r.left,innerWidth-246),y=r.bottom+6+150>innerHeight?r.top-150:r.bottom+6;p.style.left=Math.max(8,x)+'px';p.style.top=Math.max(8,y)+'px';
+  const inp=p.querySelector('#pv');inp.focus();
+  const close=()=>{root.innerHTML='';document.removeEventListener('keydown',esck)};
+  const esck=e=>{if(e.key==='Escape')close()};document.addEventListener('keydown',esck);
+  const ok=()=>{const n=parseFloat(inp.value.replace(/[^\d.]/g,''));api.setCell(t.id,w,isNaN(n)?0:n);close()};
+  p.querySelector('#pok').onclick=ok;inp.onkeydown=e=>{if(e.key==='Enter')ok()};
+  p.querySelector('#pno').onclick=close;const pd=p.querySelector('#pdel');if(pd)pd.onclick=()=>{api.setCell(t.id,w,null);close()};
+}
+
+// ---------- 홍보·콘텐츠 ----------
+const CC={'유튜브':'#C4614F','인스타':'#8C6A9E','광고':'#B7832A','기타':'#4F6488'};
+let view=(()=>{try{return localStorage.getItem('puman-view')||'list'}catch(e){return'list'}})();
+let flt={q:'',ch:'',fm:'',hideDone:false};
+function ddChip(d,st){if(!d||st==='완료')return'';const n=dday(d);return n<0?`<span class="chip dd-past">지남</span>`:n===0?`<span class="chip dd-soon">오늘</span>`:`<span class="chip ${n<=7?'dd-soon':'dd-later'}">D-${n}</span>`}
+function dueHtml(d,st){if(!d)return'<span class="due" style="color:var(--mute)">–</span>';const n=dday(d),dt=new Date(d+'T00:00:00');
+  let chip='';if(st!=='완료'){chip=n<0?`<span class="chip dd-past">지남</span>`:n===0?`<span class="chip dd-soon">오늘</span>`:`<span class="chip ${n<=7?'dd-soon':'dd-later'}">D-${n}</span>`}
+  return `<span class="due">${String(dt.getFullYear()).slice(2)}.${String(dt.getMonth()+1).padStart(2,'0')}.${String(dt.getDate()).padStart(2,'0')}${chip}</span>`}
+function content(){
+  const all=(S.contents||[]).map(norm).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999')||a.createdAt-b.createdAt);
+  const q=flt.q.trim().toLowerCase();
+  const list=all.filter(c=>(!flt.ch||c.channels.includes(flt.ch))&&(!flt.fm||c.format===flt.fm)&&(!flt.hideDone||c.status!=='완료')&&(!q||c.title.toLowerCase().includes(q)));
+  const cnt=s=>all.filter(c=>c.status===s).length;
+  const stSel=c=>isAdmin()?`<select class="st st-${esc(c.status)}" data-st="${esc(c.id)}" aria-label="진행상황">${STATUS.map(s=>`<option${s===c.status?' selected':''}>${s}</option>`).join('')}</select>`:`<span class="chip st-${esc(c.status)}">${esc(c.status)}</span>`;
+  const body=view==='list'?
+   (list.length?`<div style="overflow-x:auto"><table class="cl"><thead><tr><th>채널 · 형식</th><th>제목</th><th>진행상황</th><th>예정일</th>${isAdmin()?'<th></th>':''}</tr></thead><tbody>${list.map(c=>`<tr>
+     ${editCon===c.id?`<td><div class="chs">${CHANNELS.map(ch=>`<label><input type="checkbox" class="ech" value="${ch}"${c.channels.includes(ch)?' checked':''}>${ch}</label>`).join('')}</div><select class="efm" aria-label="형식" style="margin-top:6px">${FORMATS.map(t=>`<option${t===c.format?' selected':''}>${t}</option>`).join('')}</select></td>
+     <td><input class="etl" value="${esc(c.title)}" aria-label="제목"><div class="acts" style="margin-top:6px"><button class="btn" data-csave="${esc(c.id)}">저장</button><button class="btn ghost" data-ccancel>취소</button></div></td>`
+     :`<td style="white-space:nowrap"${isAdmin()?` class="editable" data-ced="${esc(c.id)}" title="눌러서 수정"`:''}>${c.channels.map(ch=>`<span class="chip" style="background:${CC[ch]}22;color:${CC[ch]};margin-right:4px">${esc(ch)}</span>`).join('')}<span class="fmt">${esc(c.format)}</span></td>
+     <td class="tt${isAdmin()?' editable':''}"${isAdmin()?` data-ced="${esc(c.id)}" title="눌러서 수정"`:''}>${esc(c.title)}</td>`}<td>${stSel(c)}</td>
+     <td class="due">${isAdmin()?`<input type="date" class="date" style="margin:0;width:auto" data-due="${esc(c.id)}" value="${esc(c.due||'')}" aria-label="예정일">${ddChip(c.due,c.status)}`:dueHtml(c.due,c.status)}</td>
+     ${isAdmin()?`<td style="text-align:right"><button class="x" data-cdel="${esc(c.id)}">삭제</button></td>`:''}</tr>`).join('')}</tbody></table></div>`:`<p class="empty">조건에 맞는 콘텐츠가 없어요.</p>`)
+   :`<div class="board">${CHANNELS.filter(t=>!flt.ch||t===flt.ch).map(t=>{const cs=list.filter(c=>c.channels.includes(t));return `<div class="col"><h3><i class="typ" style="background:${CC[t]}"></i>${t} <span>${cs.length}</span></h3>${cs.map(c=>`<div class="kc${isAdmin()?' editable':''}"${isAdmin()?` data-kced="${esc(c.id)}" title="눌러서 수정"`:''}><span class="fmt">${esc(c.format)}${c.channels.length>1?' · '+c.channels.filter(x=>x!==t).map(esc).join('·')+' 함께':''}</span><b>${esc(c.title)}</b><div class="meta"><span class="chip st-${esc(c.status)}">${esc(c.status)}</span>${dueHtml(c.due,c.status)}</div></div>`).join('')||'<p class="empty" style="padding:4px">없음</p>'}</div>`}).join('')}</div>`;
+  shell('content',`
+  ${isAdmin()?`<div class="card"><div class="head"><h2>새 콘텐츠 추가</h2></div><form class="cadd" id="cf">
+    <input id="ct" placeholder="제목" aria-label="제목" required><div class="chs" role="group" aria-label="채널">${CHANNELS.map((c,i)=>`<label><input type="checkbox" value="${c}"${i===0?' checked':''}>${c}</label>`).join('')}</div><select id="cfm" aria-label="형식">${FORMATS.map(t=>`<option>${t}</option>`).join('')}</select>
+    <select id="cst" aria-label="진행상황">${STATUS.map(s=>`<option>${s}</option>`).join('')}</select><input id="cdue" type="date" aria-label="예정일">
+    <button class="btn" style="background:var(--c-pr);color:#2E2925">+ 추가</button></form></div>`:''}
+  <div class="ctop"><h2>전체 콘텐츠</h2><div class="seg"><button data-v="list" class="${view==='list'?'on':''}">목록</button><button data-v="board" class="${view==='board'?'on':''}">보드</button></div></div>
+  <div class="fbar"><input id="fq" placeholder="콘텐츠 검색" value="${esc(flt.q)}" aria-label="검색"><select id="fc" aria-label="채널 필터"><option value="">전체 채널</option>${CHANNELS.map(t=>`<option${t===flt.ch?' selected':''}>${t}</option>`).join('')}</select><select id="ff" aria-label="형식 필터"><option value="">전체 형식</option>${FORMATS.map(t=>`<option${t===flt.fm?' selected':''}>${t}</option>`).join('')}</select>
+   <label><input type="checkbox" id="fh"${flt.hideDone?' checked':''}> 완료 숨기기</label><span class="counts">전체 ${all.length} · 기획 ${cnt('기획')} · 진행 ${cnt('진행')} · 완료 ${cnt('완료')}</span></div>
+  <div class="card">${body}</div>
+  <p class="sub" style="margin-top:10px">(가제)가 붙은 항목은 일정표를 바탕으로 넣어둔 예시예요. 제목이 정해지면 바꿔 주세요.</p>`);
+  app.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;try{localStorage.setItem('puman-view',view)}catch(e){};draw()});
+  const fq=app.querySelector('#fq');fq.oninput=()=>{flt.q=fq.value;const pos=fq.selectionStart;draw();const n=app.querySelector('#fq');n.focus();n.setSelectionRange(pos,pos)};
+  app.querySelector('#fc').onchange=e=>{flt.ch=e.target.value;draw()};
+  app.querySelector('#ff').onchange=e=>{flt.fm=e.target.value;draw()};
+  app.querySelector('#fh').onchange=e=>{flt.hideDone=e.target.checked;draw()};
+  app.querySelectorAll('[data-st]').forEach(e=>e.onchange=()=>api.updateContent(e.dataset.st,{status:e.value}));
+  app.querySelectorAll('[data-ced]').forEach(e=>e.onclick=()=>{editCon=e.dataset.ced;draw();const t=app.querySelector('.etl');if(t){t.focus();t.select()}});
+  app.querySelectorAll('[data-kced]').forEach(e=>e.onclick=()=>{editCon=e.dataset.kced;view='list';draw();const t=app.querySelector('.etl');if(t){t.focus();t.scrollIntoView({block:'center'})}});
+  const cs=app.querySelector('[data-csave]');if(cs){const row=cs.closest('tr');const save=()=>{const chs=[...row.querySelectorAll('.ech:checked')].map(x=>x.value);if(!chs.length){row.querySelector('.chs').style.outline='2px solid var(--rose)';return}const id=cs.dataset.csave;editCon=null;api.updateContent(id,{title:row.querySelector('.etl').value.trim()||'제목 없음',channels:chs,format:row.querySelector('.efm').value})};
+    cs.onclick=save;row.querySelector('.etl').onkeydown=e=>{if(e.key==='Enter')save();if(e.key==='Escape'){editCon=null;draw()}};row.querySelector('[data-ccancel]').onclick=()=>{editCon=null;draw()}}
+  app.querySelectorAll('[data-due]').forEach(e=>e.onchange=()=>api.updateContent(e.dataset.due,{due:e.value}));
+  app.querySelectorAll('[data-cdel]').forEach(e=>e.onclick=()=>armDelete(e,()=>api.deleteContent(e.dataset.cdel)));
+  const f=app.querySelector('#cf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#ct').value.trim();if(!t)return;const chs=[...f.querySelectorAll('.chs input:checked')].map(x=>x.value);if(!chs.length){f.querySelector('.chs').style.outline='2px solid var(--rose)';return}api.addContent({title:t,channels:chs,format:f.querySelector('#cfm').value,status:f.querySelector('#cst').value,due:f.querySelector('#cdue').value})};
+}
+
+// ---------- 자료 ----------
+const mdHtml=(t,br)=>{try{return window.DOMPurify&&window.marked?DOMPurify.sanitize(marked.parse(t||'',{breaks:!!br})):'<div style="white-space:pre-wrap">'+esc(t)+'</div>'}catch(e){return '<div style="white-space:pre-wrap">'+esc(t)+'</div>'}};
+let docQ='',upMode='md',editing=false;
+function docs(){
+  const all=(S.docs||[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
+  const list=all.filter(k=>!docQ||(k.title+k.body).toLowerCase().includes(docQ.toLowerCase()));
+  if(!openDoc||!all.find(k=>k.id===openDoc))openDoc=list[0]?.id||null;
+  const cur=all.find(k=>k.id===openDoc);
+  const D=S.decisions.map(normD).filter(d=>d.status!=='confirmed');
+  const canEd=k=>isAdmin()||nameOf(k.from)===me.id;
+  const dt=ms=>{const d=new Date(ms);return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`};
+  shell('docs',`
+  <div class="card"><div class="head"><h2>자료 올리기</h2><p class="sub">md 파일을 올리거나, 카톡·메모 내용을 붙여넣어 바로 쓸 수 있어요</p></div>
+   <div class="seg dseg"><button data-up="md" class="${upMode==='md'?'on':''}">md 파일</button><button data-up="text" class="${upMode==='text'?'on':''}">직접 쓰기</button></div>
+   <form class="dadd${upMode==='text'?' txt':''}" id="kf">${upMode==='md'?`<label class="file"><input type="file" id="kfile" accept=".md,.markdown,.txt,text/markdown,text/plain"><span id="kfname">md 파일 고르기</span></label>`:''}
+    <input id="kt" placeholder="${upMode==='md'?'제목 (비우면 파일의 첫 제목)':'제목'}" aria-label="제목"${upMode==='text'?' required':''}><select id="kc" aria-label="분류">${DOC_CATS.map(c=>`<option>${c}</option>`).join('')}</select>
+    <select id="kl" aria-label="연결할 결정 항목"><option value="">결정 항목 연결 안 함</option>${D.map(d=>`<option value="${esc(d.id)}">${esc(d.title)}</option>`).join('')}</select><button class="btn">올리기</button>
+    ${upMode==='text'?'<textarea id="kbody" placeholder="내용을 쓰거나 붙여넣어 주세요. 줄바꿈은 그대로 보여요." aria-label="내용" required></textarea>':''}</form>
+   <p class="sub" id="kmsg"></p></div>
+  <section class="docs">
+   <div class="card dlist"><input id="kq" placeholder="자료 검색" value="${esc(docQ)}" aria-label="자료 검색">
+    ${list.length?list.map(k=>{const ln=S.decisions.find(d=>d.id===k.link);return `<button class="ditem${k.id===openDoc?' on':''}" data-k="${esc(k.id)}"><span class="tag">${esc(k.cat)}</span><b>${esc(k.title)}</b><span class="sub">${dt(k.createdAt)}${k.from?' · '+esc(nameOf(k.from)):''}${ln?' · 결정: '+esc(ln.title):''}</span></button>`}).join(''):'<p class="empty">아직 올린 자료가 없어요.</p>'}</div>
+   <article class="card dview">${cur?`<div class="dhead"><div><span class="tag">${esc(cur.cat)}</span><span class="sub">${dt(cur.createdAt)}${cur.from?' · '+esc(nameOf(cur.from))+' 올림':''}</span></div>${canEd(cur)?`<div class="dact"><select id="kl2" aria-label="결정 항목 연결"><option value="">결정 항목 연결 안 함</option>${S.decisions.map(normD).map(d=>`<option value="${esc(d.id)}"${d.id===cur.link?' selected':''}>${esc(d.title)}</option>`).join('')}</select><button class="x" id="kedit">${editing?'취소':'수정'}</button><button class="x" id="kdel">삭제</button></div>`:''}</div>${editing&&canEd(cur)?`<form id="kef" class="kedit"><input id="ket" value="${esc(cur.title)}" aria-label="제목" required><textarea id="keb" aria-label="내용">${esc(cur.body)}</textarea><button class="btn">저장</button></form>`:`<div class="mdv">${cur.kind==='text'?`<h1>${esc(cur.title)}</h1>`:''}${mdHtml(cur.body,cur.kind==='text')}</div>`}`:'<p class="empty">왼쪽에서 자료를 골라주세요.</p>'}</article>
+  </section>`);
+  let fileText='',fileName='';
+  app.querySelectorAll('[data-up]').forEach(x=>x.onclick=()=>{upMode=x.dataset.up;draw()});
+  const fi=app.querySelector('#kfile');
+  if(fi)fi.onchange=()=>{const f=fi.files[0];if(!f)return;if(f.size>800000){app.querySelector('#kmsg').textContent='파일이 너무 커요. 800KB 이하 md 파일만 올릴 수 있어요.';fi.value='';return}
+    const r=new FileReader();r.onload=()=>{fileText=String(r.result);fileName=f.name;app.querySelector('#kfname').textContent=f.name;const h=fileText.match(/^#\s+(.+)$/m);const t=app.querySelector('#kt');if(!t.value)t.placeholder=h?h[1].trim():f.name.replace(/\.[^.]+$/,'')};r.readAsText(f,'utf-8')};
+  app.querySelector('#kf').onsubmit=async ev=>{ev.preventDefault();const m=app.querySelector('#kmsg');let body,kind;
+    if(upMode==='md'){if(!fileText){m.textContent='먼저 md 파일을 골라주세요.';return}body=fileText;kind='md'}
+    else{body=app.querySelector('#kbody').value;if(!body.trim()){m.textContent='내용을 써 주세요.';return}if(body.length>800000){m.textContent='내용이 너무 길어요.';return}kind='text'}
+    const t=app.querySelector('#kt').value.trim()||app.querySelector('#kt').placeholder;
+    const id=await api.addDoc({title:t,cat:app.querySelector('#kc').value,link:app.querySelector('#kl').value,body,kind,from:me.id,file:fileName});openDoc=id||openDoc;editing=false;draw()};
+  const ke=app.querySelector('#kedit');if(ke)ke.onclick=()=>{editing=!editing;draw()};
+  const kef=app.querySelector('#kef');if(kef)kef.onsubmit=ev=>{ev.preventDefault();editing=false;api.updateDoc(cur.id,{title:kef.querySelector('#ket').value.trim()||cur.title,body:kef.querySelector('#keb').value})};
+  const kq=app.querySelector('#kq');kq.oninput=()=>{docQ=kq.value;const pos=kq.selectionStart;draw();const n=app.querySelector('#kq');n.focus();n.setSelectionRange(pos,pos)};
+  app.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{openDoc=b.dataset.k;editing=false;draw();if(innerWidth<900)app.querySelector('.dview').scrollIntoView({behavior:'smooth'})});
+  const l2=app.querySelector('#kl2');if(l2)l2.onchange=()=>api.updateDoc(cur.id,{link:l2.value});
+  const kd=app.querySelector('#kdel');if(kd)kd.onclick=()=>armDelete(kd,()=>{api.deleteDoc(cur.id);openDoc=null});
+}
+
+// ---------- 회원권 ----------
+function member(){
+  const st=S.settings,T=(st.tiers&&st.tiers.length?st.tiers:SEED_TIERS).map(t=>({...t}));
+  const qty=T.reduce((a,t)=>a+(+t.qty||0),0),sold=T.reduce((a,t)=>a+(+t.sold||0),0);
+  const priced=T.every(t=>+t.price>0),dep=T.reduce((a,t)=>a+(+t.price||0)*(+t.qty||0),0),depSold=T.reduce((a,t)=>a+(+t.price||0)*(+t.sold||0),0);
+  const pct=qty?sold/qty*100:0;
+  const od=st.openDate?new Date(st.openDate+'T00:00:00'):null,sd=st.saleDate?new Date(st.saleDate+'T00:00:00'):null;
+  const today=new Date();today.setHours(0,0,0,0);
+  const from=sd&&sd>today?sd:today,weeks=od?Math.max(1,Math.ceil((od-from)/(7*864e5))):null;
+  const pace=weeks?Math.ceil((qty-sold)/weeks):null;
+  const TCOL={Founders:'var(--c-core)',Standard:'var(--c-pr)',Premium:'var(--c-base)'};
+  const inp=(i,k,v,ph,num=true)=>isAdmin()?`<input class="mi${num?' n':''}" data-ti="${i}" data-tk="${k}" value="${esc(v)}" placeholder="${ph}" ${num?'inputmode="numeric"':''} aria-label="${ph}">`:`<span${num?' class="n"':''}>${v!==''&&v!==undefined?(num?fmt(v):esc(v)):'–'}</span>`;
+  shell('member',`
+  <section class="grid4">
+   <div class="card"><h3>목표 구좌</h3><div class="big">${fmt(qty)}<span style="font-size:15px;font-weight:600"> 구좌</span></div><div class="sub">${T.map(t=>esc(t.name)+' '+fmt(t.qty)).join(' · ')}</div></div>
+   <div class="card"><h3>판매</h3><div class="big">${fmt(sold)}<span style="font-size:15px;font-weight:600"> 구좌</span></div><div class="sub">진행률 ${pct.toFixed(1)}% · 남은 ${fmt(qty-sold)}구좌</div><div class="stack">${T.map(t=>`<i style="width:${qty?(+t.sold||0)/qty*100:0}%;background:${TCOL[t.name]||'var(--oak)'}"></i>`).join('')}</div></div>
+   <div class="card"><h3>보증금 총액 (목표)</h3><div class="big">${priced?fmt(dep):'가격 미정'}${priced?'<span style="font-size:15px;font-weight:600"> 만원</span>':''}</div><div class="sub">${priced?'판매분 '+fmt(depSold)+'만원':'등급별 보증금을 넣으면 계산돼요'}</div></div>
+   <div class="card"><h3>오픈까지 필요한 판매 속도</h3><div class="big">${pace!==null?'주 '+fmt(pace):'날짜 미정'}${pace!==null?'<span style="font-size:15px;font-weight:600"> 구좌</span>':''}</div><div class="sub">${pace!==null?(sd&&sd>today?'판매 시작일':'오늘')+'부터 오픈까지 '+weeks+'주 기준':'대시보드에서 오픈일을 정하면 계산돼요'}</div></div>
+  </section>
+  <div class="card"><div class="head"><h2>등급별 현황</h2><p class="sub">${esc(st.memberNote||'')}</p></div>
+   <div style="overflow-x:auto"><table class="t mt"><thead><tr><th>등급</th><th class="n">구좌</th><th class="n">보증금 (만원/구좌)</th><th class="n">판매</th><th>진행률</th><th>혜택 메모</th></tr></thead><tbody>
+   ${T.map((t,i)=>{const p=(+t.qty||0)?(+t.sold||0)/(+t.qty)*100:0;return `<tr><td><span class="dot" style="display:inline-block;background:${TCOL[t.name]||'var(--oak)'};margin-right:8px"></span><b>${esc(t.name)}</b></td>
+     <td class="n">${inp(i,'qty',t.qty,'구좌')}</td><td class="n">${inp(i,'price',t.price,'미정')}</td><td class="n">${inp(i,'sold',t.sold,'0')}</td>
+     <td style="min-width:160px"><div class="pbar"><i style="width:${Math.min(100,p)}%;background:${TCOL[t.name]||'var(--oak)'}"></i></div><span class="sub" style="margin:0">${p.toFixed(1)}%</span></td>
+     <td>${inp(i,'benefit',t.benefit,'혜택 입력',false)}</td></tr>`}).join('')}
+   </tbody><tfoot><tr><td>합계</td><td class="n">${fmt(qty)}</td><td class="n">${priced?fmt(dep)+'만원':'–'}</td><td class="n">${fmt(sold)}</td><td>${pct.toFixed(1)}%</td><td></td></tr></tfoot></table></div>
+   <p class="sub" style="margin-top:10px">구좌 수는 디자인북 기획안 기준이에요. 보증금과 혜택은 확정 후 입력해요.${isAdmin()?' 칸을 눌러 바로 고칠 수 있어요.':''}</p></div>`);
+  app.querySelectorAll('[data-ti]').forEach(e=>e.onchange=()=>{const i=+e.dataset.ti,k=e.dataset.tk;const v=k==='benefit'?e.value.trim():e.value.replace(/[^\d.]/g,'');T[i]={...T[i],[k]:k==='benefit'?v:(v===''?'':+v)};api.setSettings({tiers:T})});
+}
+
+// ---------- 시작 ----------
+function route(){({'#plan':plan,'#content':content,'#docs':docs,'#member':member}[location.hash]||dash)()}
+addEventListener('hashchange',()=>{document.getElementById('popRoot').innerHTML='';route()});
+(async()=>{
+  if(CFG&&CFG.firebase&&CFG.firebase.apiKey){LOCAL=false;try{api=await fireApi()}catch(e){app.innerHTML=`<div class="login card"><h1>연결 오류</h1><p class="sub">Firebase에 연결하지 못했어요. 설정 파일을 확인해 주세요.</p></div>`;return}}
+  else{window.PUMAN_CONFIG=null;api=localApi()}
+  route();setTimeout(()=>app.classList.remove('first'),600);
+})();
+}
+</script>
+</body>
+</html>

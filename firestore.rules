@@ -1,0 +1,47 @@
+rules_version = '2';
+// PUMAN 오픈 준비 본부 — 보안 규칙
+// 계정을 추가할 때: firebase-config.js와 함께 아래 ADMINS / MEMBERS / ORG 세 곳을 맞추세요.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function email() { return request.auth.token.email.lower(); }
+    function signedIn() { return request.auth != null && request.auth.token.email_verified == true; }
+    // ADMINS
+    function isAdmin() { return signedIn() && email() in ['qoghwjd123@gmail.com']; }
+    // MEMBERS (예: 'hyunwoo@gmail.com')
+    function isMember() { return signedIn() && (isAdmin() || email() in []); }
+    // ORG: 계정별 소속
+    function org() { return {'qoghwjd123@gmail.com': '미디어볼'}.get(email(), ''); }
+
+    // 오픈일·판매일·3안·회원권 등급: 관리자만 수정
+    match /settings/{id} {
+      allow read: if isMember();
+      allow write: if isAdmin();
+    }
+    // 간트 업무와 주별 금액: 관리자만 수정
+    match /tasks/{id} {
+      allow read: if isMember();
+      allow write: if isAdmin();
+    }
+    // 홍보·콘텐츠 목록: 관리자만 수정
+    match /contents/{id} {
+      allow read: if isMember();
+      allow write: if isAdmin();
+    }
+    // 결정할 것: 보낸 소속은 내용 수정, 받는 소속은 확정/되돌리기, 삭제는 보낸 소속과 관리자
+    match /decisions/{id} {
+      allow read: if isMember();
+      allow create: if isMember() && request.resource.data.from == org();
+      allow delete: if isAdmin() || (isMember() && resource.data.from == org());
+      allow update: if isAdmin() ||
+        (isMember() && resource.data.from == org() && request.resource.data.from == org()) ||
+        (isMember() && resource.data.to == org() &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'confirmedAt', 'confirmedBy']));
+    }
+    // 자료(md·직접 쓰기): 누구나 올리기, 수정·삭제는 올린 소속과 관리자
+    match /docs/{id} {
+      allow read: if isMember();
+      allow create: if isMember() && request.resource.data.from == org() && request.resource.data.body.size() < 800000;
+      allow update, delete: if isAdmin() || (isMember() && resource.data.from == org());
+    }
+  }
+}
