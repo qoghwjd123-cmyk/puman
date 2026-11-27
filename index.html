@@ -53,7 +53,7 @@ nav a.on{background:var(--ink);color:var(--bg)}nav a.off{opacity:.45;pointer-eve
 .tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--soft);color:var(--oak);margin-right:6px;vertical-align:1px}
 .x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:13px;padding:4px 6px;min-height:32px}
 .x:hover{color:var(--rose)}
-.add{display:grid;grid-template-columns:110px minmax(0,1fr) 170px auto;gap:8px;margin:0 0 14px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
+.add{display:grid;grid-template-columns:110px minmax(0,1fr) 128px 160px auto;gap:8px;margin:0 0 14px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
 .add textarea{grid-column:1/-1;resize:vertical;min-height:44px}
 .add input,.add select,.add textarea{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px 10px;font-size:16px;font-family:inherit;color:inherit}
 .btn{border:0;background:var(--ink);color:var(--bg);border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer;min-height:40px}
@@ -69,7 +69,7 @@ details.done summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--o
 .stack{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--soft);margin-top:12px}
 :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
 /* 기획·예산 */
-.sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.6fr);gap:12px;margin-bottom:12px}
+.sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.6fr);gap:12px;margin-bottom:12px}
 .scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .scen div{background:var(--soft);border-radius:8px;padding:8px 10px}
 .scen label{display:block;font-size:12px;color:var(--mute);white-space:nowrap}
@@ -173,7 +173,7 @@ div.editable{margin:-4px -6px;padding:4px 6px}
 input[type=date]{cursor:pointer}
 .login{max-width:420px;margin:12vh auto;text-align:center}.login h1{font-size:28px;margin:0 0 8px}
 @media(max-width:900px){.docs{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dadd .file,.dadd #kt{grid-column:1/-1;max-width:none}.cadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cadd input:first-child,.cadd .chs{grid-column:1/-1}.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.row2,.row3{grid-template-columns:minmax(0,1fr)}.sum{grid-template-columns:repeat(3,minmax(0,1fr))}.sum .card:last-child{grid-column:1/-1}}
-@media(max-width:600px){.dedit .r{grid-template-columns:minmax(0,1fr)}.who{margin-left:0;width:100%}nav{width:100%;overflow-x:auto}.big{font-size:24px}.sum{grid-template-columns:minmax(0,1fr)}.add{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr)}.g .nm{min-width:130px;max-width:130px}}
+@media(max-width:600px){.dedit .r{grid-template-columns:minmax(0,1fr)}.who{margin-left:0;width:100%}nav{width:100%;overflow-x:auto}.big{font-size:24px}.sum{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.sum>.card:nth-child(n+3){grid-column:1/-1}.add{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr)}.g .nm{min-width:130px;max-width:130px}}
 @media(prefers-reduced-motion:no-preference){.first .card,.first .gwrap{animation:in .35s ease both}@keyframes in{from{opacity:.4;transform:translateY(4px)}}}
 
 .old{display:inline-block;margin-left:6px;font-size:11px;font-weight:600;color:#A2493A;background:#F7E6E2;border-radius:4px;padding:1px 6px;vertical-align:1px}
@@ -200,6 +200,15 @@ table.g.gm{min-width:0;width:100%}.g.gm .tot,.g.gm thead th.tot{position:static;
 @media(max-width:700px){.g .nm{min-width:112px;max-width:112px;font-size:12px;padding:0 8px}.g td.tot{min-width:56px;font-size:11.5px}table.g.gm{table-layout:fixed}.g.gm .nm{width:96px;min-width:0;max-width:none}.g.gm .tot,.g.gm th.tot{display:none}.g.gm td.mc{min-width:0;font-size:0}.g.gm th.mh{font-size:10.5px;padding:0}.g.gm th.mh .w{display:none}.g.gm th.yr{font-size:10px}.g.gm .yl{display:none}.g.gm tfoot td{font-size:0}.g.gm tfoot td.nm{font-size:11.5px}.gbar{flex-wrap:wrap}}
 
 @media(max-width:700px){table.cl,table.cl tbody{display:block}.cl thead{display:none}.cl tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 10px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line)}.cl td{padding:0;border:0;min-width:0}.cl td:nth-child(1),.cl td:nth-child(2){grid-column:1/-1}.cl td.tt{font-size:15px;line-height:1.4}.cl td:nth-child(4){grid-column:2}.cl td.due{display:flex;align-items:center;gap:6px}.cl td.due input.date{max-width:150px;padding:6px 8px;font-size:14px}}
+
+.dtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 6px}.dtop .dseg{margin:0}.dsort{margin-left:auto}.dsort button{padding:5px 12px;min-height:32px;font-size:12.5px}
+.pri{display:inline-block;margin-right:6px;font-size:11.5px;font-weight:700;border-radius:4px;padding:1px 6px;vertical-align:1px;border:1px solid transparent;font-family:inherit;line-height:1.5}
+select.pri{appearance:none;-webkit-appearance:none;width:auto;min-height:0;height:auto;margin:0 6px 0 0;padding:1px 6px;cursor:pointer;background-image:none}
+.pri.p0{color:var(--mute);border:1px dashed var(--line);background:none;font-weight:500}.pri.p1{color:#fff;background:#C4614F}.pri.p2{color:#7A5310;background:#F3E2BF}.pri.p3{color:#4F5B6E;background:#E6EAF0}
+@media(max-width:700px){.dsort{margin-left:0}}
+
+.mnav{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}.mnav h3{margin:0;white-space:nowrap}.arw{display:inline-flex;align-items:center;gap:2px}.arw b{min-width:36px;text-align:center;font-size:14px;white-space:nowrap}
+.arw button{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:18px;line-height:1;cursor:pointer;color:inherit;padding:0}.arw button:disabled{opacity:.3;cursor:default}
 </style>
 </head>
 <body>
@@ -404,7 +413,9 @@ function shell(tab,body){
 }
 
 // ---------- 대시보드 ----------
-let decMore=false;
+let decMore=false,decSort=(()=>{try{return localStorage.getItem('puman-dsort')||'reg'}catch(e){return'reg'}})();
+const PRI=[[1,'1순위'],[2,'2순위'],[3,'3순위']];
+const priOf=d=>[1,2,3].includes(+d.pri)?+d.pri:0;
 function dash(){
   const st=S.settings,od=dday(st.openDate),sd=dday(st.saleDate),tot=total();
   const D=S.decisions.map(normD);
@@ -413,7 +424,8 @@ function dash(){
   const mine=pend.filter(d=>d.to===me.id),sent=pend.filter(d=>d.from===me.id),others=pend.filter(d=>d.to!==me.id&&d.from!==me.id);
   const PL=PEOPLE().slice().sort((a,b)=>(a===MEMBER0()?-1:0)-(b===MEMBER0()?-1:0));
   const tabId=PL.includes(decBox)?decBox:me.id;
-  const box=pend.filter(d=>d.to===tabId);
+  const box=pend.filter(d=>d.to===tabId);if(decSort==='pri')box.sort((a,b)=>((priOf(a)||9)-(priOf(b)||9))||(a.createdAt-b.createdAt));
+  const priUI=d=>{const p=priOf(d);return canEditDec(d)?`<select class="pri p${p}" data-pri="${esc(d.id)}" aria-label="중요도"><option value="0"${p?'':' selected'}>중요도</option>${PRI.map(([v,l])=>`<option value="${v}"${p===v?' selected':''}>${'!'.repeat(4-v)} ${l}</option>`).join('')}</select>`:(p?`<span class="pri p${p}">${'!'.repeat(4-p)} ${PRI[p-1][1]}</span>`:'')};
   const docOf=id=>(S.docs||[]).filter(k=>linksOf(k).includes(id));
   const w=curWeek(),before=new Date()<START;
   const curM=MONTHS.find(m=>w>=m[1]&&w<=m[2])||MONTHS[0];
@@ -438,14 +450,14 @@ function dash(){
    <div class="card"><h3>오픈까지</h3>${dd(od,st.openDate,'5~6월 중, 달력에서 정해주세요')}${dateIn('openDate',st.openDate)}</div>
    <div class="card"><h3>회원권 판매 시작까지</h3>${dd(sd,st.saleDate,'2027년 2월 중')}${dateIn('saleDate',st.saleDate)}</div>
    <div class="card bsplit"><div><h3>${curM[0]} 예산</h3><div class="mid">${monthSum(curM)?fmt(monthSum(curM))+'<small> 만원</small>':'–'}</div></div>
-    <div><h3>전체 기획 예산 (${SPAN})</h3><div class="mid">${tot?fmt(tot)+'<small> 만원</small>':'입력 전'}</div><div class="sub">${tot?'예비비 10% 포함 '+fmt(tot*1.1)+'만원':'기획·예산 탭에서 주별 금액을 넣어요'}</div><div class="stack">${stack}</div></div></div>
+    <div><h3>전체 기획 예산 (${SPAN})</h3><div class="mid">${tot?fmt(tot)+'<small> 만원</small>':'입력 전'}</div><div class="sub">${tot?'간트 주별 금액 합계':'기획·예산 탭에서 주별 금액을 넣어요'}</div><div class="stack">${stack}</div></div></div>
    <div class="card"><h3>내가 확인할 것</h3><div class="big">${mine.length}<span style="font-size:15px;font-weight:600"> 건</span></div><div class="sub">답 기다리는 것 ${sent.length}건 · 확정 ${done.length}건</div></div>
   </section>
   <section class="row2">
    <div class="card"><div class="head"><h2>결정할 것</h2><p class="sub">받은 사람이 체크하면 확정됨으로 옮겨져요</p></div>
-    <form class="add" id="addf"><select id="ncat" aria-label="분류">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input id="nt" placeholder="물어볼 것 (예: 공항광고 게재 기간)" aria-label="제목" required><select id="nto" aria-label="받는 사람">${PEOPLE().filter(p=>p!==me.id).map(p=>`<option value="${esc(p)}">${esc(nameOf(p))} 확인 요청</option>`).join('')}</select><button class="btn">추가</button><textarea id="nd" hidden placeholder="확인해야 할 부분 (선택)" aria-label="확인할 부분"></textarea></form>
-    <div class="seg dseg" role="tablist">${PL.map(p=>{const n=pend.filter(d=>d.to===p).length;return `<button data-box="${esc(p)}" class="${tabId===p?'on':''}">${esc(nameOf(p))} 확인 대기 ${n}${p===me.id&&n?'<i class="turn">내 차례</i>':''}</button>`}).join('')}</div>
-    ${box.length?`<ul class="dec">${(decMore?box:box.slice(0,3)).map(d=>{const canOk=d.to===me.id,canDel=isAdmin()||d.from===me.id,ks=docOf(d.id);return `<li>${canOk?`<input type="checkbox" data-ok="${esc(d.id)}" aria-label="${esc(d.title)} 확인">`:`<span class="wait" title="받은 사람이 확인해야 해요">…</span>`}${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}${stale(d)?`<span class="old">${Math.floor((Date.now()-d.createdAt)/DAY)}일째 대기</span>`:''}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="dir">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))}${ks.map(k=>` · <a href="#docs" data-open="${esc(k.id)}">근거 자료: ${esc(k.title)}</a>`).join('')}</div></div>`}${canDel?`<button class="x" data-del="${esc(d.id)}" aria-label="삭제">삭제</button>`:'<span></span>'}</li>`}).join('')}</ul>${box.length>3?`<button class="more2" id="decMore">${decMore?'접기':`더 보기 (${box.length-3}건)`}</button>`:''}`:`<p class="empty">${esc(nameOf(tabId))} 확인 대기 항목이 없어요.</p>`}
+    <form class="add" id="addf"><select id="ncat" aria-label="분류">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input id="nt" placeholder="물어볼 것 (예: 공항광고 게재 기간)" aria-label="제목" required><select id="nto" aria-label="받는 사람">${PEOPLE().filter(p=>p!==me.id).map(p=>`<option value="${esc(p)}">${esc(nameOf(p))} 확인 요청</option>`).join('')}</select><select id="npri" aria-label="중요도"><option value="0">중요도 없음</option>${PRI.map(([v,l])=>`<option value="${v}">${'!'.repeat(4-v)} ${l}</option>`).join('')}</select><button class="btn">추가</button><textarea id="nd" hidden placeholder="확인해야 할 부분 (선택)" aria-label="확인할 부분"></textarea></form>
+    <div class="dtop"><div class="seg dseg" role="tablist">${PL.map(p=>{const n=pend.filter(d=>d.to===p).length;return `<button data-box="${esc(p)}" class="${tabId===p?'on':''}">${esc(nameOf(p))} 확인 대기 ${n}${p===me.id&&n?'<i class="turn">내 차례</i>':''}</button>`}).join('')}</div><div class="seg dsort" aria-label="정렬"><button data-dsort="reg" class="${decSort==='reg'?'on':''}">등록순</button><button data-dsort="pri" class="${decSort==='pri'?'on':''}">중요도순</button></div></div>
+    ${box.length?`<ul class="dec">${(decMore?box:box.slice(0,3)).map(d=>{const canOk=d.to===me.id,canDel=isAdmin()||d.from===me.id,ks=docOf(d.id);return `<li>${canOk?`<input type="checkbox" data-ok="${esc(d.id)}" aria-label="${esc(d.title)} 확인">`:`<span class="wait" title="받은 사람이 확인해야 해요">…</span>`}${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t">${priUI(d)}<span class="tag">${esc(d.cat)}</span>${esc(d.title)}${stale(d)?`<span class="old">${Math.floor((Date.now()-d.createdAt)/DAY)}일째 대기</span>`:''}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="dir">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))}${ks.map(k=>` · <a href="#docs" data-open="${esc(k.id)}">근거 자료: ${esc(k.title)}</a>`).join('')}</div></div>`}${canDel?`<button class="x" data-del="${esc(d.id)}" aria-label="삭제">삭제</button>`:'<span></span>'}</li>`}).join('')}</ul>${box.length>3?`<button class="more2" id="decMore">${decMore?'접기':`더 보기 (${box.length-3}건)`}</button>`:''}`:`<p class="empty">${esc(nameOf(tabId))} 확인 대기 항목이 없어요.</p>`}
     <details class="done"${done.length?'':' hidden'}${done.some(d=>d.id===editDec)||doneOpen?' open':''}><summary>확정됨 ${done.length}건</summary><ul class="dec">${done.map(d=>`<li><span aria-hidden="true" style="color:var(--ok);font-weight:700">✓</span>${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="by">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))} · ${esc(d.confirmedBy||'')}${d.confirmedAt?' · '+md(new Date(d.confirmedAt)):''}</div></div>`}${isAdmin()||d.to===me.id?`<button class="x" data-undo="${esc(d.id)}">되돌리기</button>`:'<span></span>'}</li>`).join('')}</ul></details>
    </div>
    <div class="card"><div class="head"><h2>${before?'첫 주':'이번 주'} 할 일</h2><p class="sub">${md(wd(w))} ~ ${md(new Date(wd(w).getTime()+6*864e5))}</p></div>
@@ -474,6 +486,8 @@ function dash(){
   ['openDate','saleDate'].forEach(k=>{const e=app.querySelector('#'+k);if(e)e.onchange=()=>api.setSettings({[k]:e.value})});
   app.querySelectorAll('[data-ok]').forEach(e=>e.onchange=()=>api.updateDecision(e.dataset.ok,{status:'confirmed',confirmedAt:Date.now(),confirmedBy:nameOf(me.id)+' 확인'}));
   app.querySelectorAll('[data-box]').forEach(b=>b.onclick=()=>{decBox=b.dataset.box;editDec=null;decMore=false;draw()});
+  app.querySelectorAll('[data-dsort]').forEach(b=>b.onclick=()=>{decSort=b.dataset.dsort;try{localStorage.setItem('puman-dsort',decSort)}catch(e){};draw()});
+  app.querySelectorAll('select[data-pri]').forEach(s=>{s.onclick=ev=>ev.stopPropagation();s.onchange=()=>api.updateDecision(s.dataset.pri,{pri:+s.value||0})});
   const dm=app.querySelector('#decMore');if(dm)dm.onclick=()=>{decMore=!decMore;draw()};
   const dt=app.querySelector('details.done');if(dt)dt.ontoggle=()=>{doneOpen=dt.open};
   app.querySelectorAll('[data-ed]').forEach(e=>e.onclick=ev=>{if(ev.target.closest('a'))return;editDec=e.dataset.ed;draw();const f=app.querySelector('.dedit input[name=title]');if(f){f.focus();f.select()}});
@@ -483,7 +497,7 @@ function dash(){
   app.querySelectorAll('[data-del]').forEach(e=>e.onclick=()=>armDelete(e,()=>api.deleteDecision(e.dataset.del)));
   app.querySelectorAll('[data-undo]').forEach(e=>e.onclick=()=>api.updateDecision(e.dataset.undo,{status:'pending',confirmedAt:null,confirmedBy:''}));
   {const nt=app.querySelector('#nt'),nd=app.querySelector('#nd');if(nt&&nd){nt.addEventListener('input',()=>{if(nt.value.trim())nd.hidden=false});nt.addEventListener('focus',()=>{nd.hidden=false})}}
-  const f=app.querySelector('#addf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#nt').value.trim();if(!t)return;decBox=f.querySelector('#nto').value;api.addDecision({cat:f.querySelector('#ncat').value,title:t,detail:f.querySelector('#nd').value.trim(),status:'pending',confirmedBy:'',from:me.id,to:f.querySelector('#nto').value})};
+  const f=app.querySelector('#addf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#nt').value.trim();if(!t)return;decBox=f.querySelector('#nto').value;api.addDecision({cat:f.querySelector('#ncat').value,pri:+f.querySelector('#npri').value||0,title:t,detail:f.querySelector('#nd').value.trim(),status:'pending',confirmedBy:'',from:me.id,to:f.querySelector('#nto').value})};
 }
 let doneOpen=false,decBox='',openDoc=null,editDec=null,editCon=null;
 const decForm=d=>`<form class="dedit" data-def="${esc(d.id)}"><div class="r"><select name="cat" aria-label="분류">${CATS.map(c=>`<option${c===d.cat?' selected':''}>${c}</option>`).join('')}</select><input name="title" value="${esc(d.title)}" aria-label="제목" required><select name="to" aria-label="받는 사람">${PEOPLE().filter(p=>p!==d.from).map(p=>`<option value="${esc(p)}"${p===d.to?' selected':''}>${esc(nameOf(p))} 확인 요청</option>`).join('')}</select></div><textarea name="detail" aria-label="확인할 부분" placeholder="확인해야 할 부분 (선택)">${esc(d.detail||'')}</textarea><div class="acts"><button class="btn">저장</button><button type="button" class="btn ghost" data-cancel>취소</button></div></form>`;
@@ -492,7 +506,9 @@ function armDelete(btn,fn){if(btn.dataset.arm){fn();return}btn.dataset.arm=1;btn
 
 // ---------- 기획·예산 ----------
 let gz=(()=>{try{return localStorage.getItem('puman-gz')||'w'}catch(e){return'w'}})(),gzJump=null;
+let pmSel=null;
 function plan(){
+  const cmI=Math.max(0,MONTHS.findIndex(m=>curWeek()>=m[1]&&curWeek()<=m[2])),pmI=pmSel===null?cmI:pmSel,PM=MONTHS[pmI];
   const st=S.settings,tot=total(),w0=curWeek();
   const msSet=new Set(MONTHS.map(m=>m[1]));
   const head1=MONTHS.map(([m,a,b])=>`<th colspan="${b-a+1}" class="ms">${m}</th>`).join('');
@@ -517,12 +533,11 @@ function plan(){
   const og=app.querySelector('.gwrap'),keepX=og?og.scrollLeft:null,keepY=og?scrollY:null;
   shell('plan',`
   <section class="sum">
-   <div class="card"><h3>업무 합계</h3><div class="big">${tot?fmt(tot):'–'}</div><div class="sub">만원</div></div>
-   <div class="card"><h3>예비비 10%</h3><div class="big">${tot?fmt(tot*.1):'–'}</div><div class="sub">만원</div></div>
-   <div class="card"><h3>총계</h3><div class="big">${tot?fmt(tot*1.1):'–'}</div><div class="sub">만원</div></div>
+   <div class="card"><div class="mnav"><h3>월별 예산</h3><span class="arw"><button data-pm="-1" aria-label="이전 달"${pmI<=0?' disabled':''}>‹</button><b>${PM[0]}</b><button data-pm="1" aria-label="다음 달"${pmI>=MONTHS.length-1?' disabled':''}>›</button></span></div><div class="big">${monthSum(PM)?fmt(monthSum(PM)):'–'}</div><div class="sub">만원</div></div>
+   <div class="card"><h3>총계</h3><div class="big">${tot?fmt(tot):'–'}</div><div class="sub">만원</div></div>
    <div class="card"><h3>3안 비교 (총액, 만원)</h3><div class="scen">
      <div><label for="scenMin">최소안</label>${scenIn('scenMin',st.scenMin)}</div>
-     <div><label>적정안 · 현재</label><b>${tot?fmt(tot*1.1):'–'}</b></div>
+     <div><label>적정안 · 현재</label><b>${tot?fmt(tot):'–'}</b></div>
      <div><label for="scenAgg">공격안</label>${scenIn('scenAgg',st.scenAgg)}</div></div></div>
   </section>
   <div class="card"><div class="head"><h2>홍보 일정과 주별 금액</h2><p class="sub">${isAdmin()?'칸을 눌러 일정을 넣고 금액(만원)을 적어요. 0이면 일정만 표시돼요.':'금액 단위는 만원이에요.'}</p></div>
@@ -539,6 +554,7 @@ function plan(){
    <tbody>${costTasks().map(t=>`<tr><td>${esc(t.g)}</td><td>${esc(t.name)}</td><td style="color:var(--mute);font-size:13px">${esc(t.note)}</td><td class="n">${rowSum(t)?fmt(rowSum(t)):'–'}</td><td class="n">${tot?Math.round(rowSum(t)/tot*100)+'%':'–'}</td></tr>`).join('')}</tbody>
    <tfoot><tr><td></td><td>합계</td><td></td><td class="n">${tot?fmt(tot):'–'}</td><td class="n">${tot?'100%':''}</td></tr></tfoot></table></div></div>`);
   ['scenMin','scenAgg'].forEach(k=>{const e=app.querySelector('#'+k);if(e)e.onchange=()=>api.setSettings({[k]:e.value.replace(/[^\d.]/g,'')})});
+  app.querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>{pmSel=Math.min(MONTHS.length-1,Math.max(0,pmI+ +b.dataset.pm));draw()});
   app.querySelectorAll('[data-gz]').forEach(e=>e.onclick=()=>{gz=e.dataset.gz;try{localStorage.setItem('puman-gz',gz)}catch(x){};draw()});
   app.querySelectorAll('[data-mj]').forEach(e=>e.onclick=()=>{gzJump=+e.dataset.mj;gz='w';try{localStorage.setItem('puman-gz',gz)}catch(x){};draw()});
   const ng=app.querySelector('.gwrap');
