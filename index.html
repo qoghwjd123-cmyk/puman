@@ -215,18 +215,18 @@ const SEED_TASKS=[
  T('기반','채널·광고계정 세팅','blue',R('C','E'),true,'채널, 광고 계정, 사전 신청 페이지, 픽셀'),
  T('기반','기획·운영','blue',R('C','AG'),true),
  T('기반','홍보 성과 보고','green',L('K','O','T','X','AC','AG'),false,'월 1회, 비용은 기획·운영에 포함'),
- T('콘텐츠','유튜브 롱폼 제작','blue',[...R('C','E'),...L('J','L','N','P','R','T','V','X','Z','AB','AD')],true,'첫 3편 12일, 이후 격주 1편 가정'),
- T('콘텐츠','유튜브 롱폼 업로드','green',L('E','F','G','K','M','O','Q','S','U','W','Y','AA','AC','AE'),false),
- T('콘텐츠','숏폼 제작','blue',R('F','G'),true,'4개 × 2일'),
- T('콘텐츠','숏폼·SNS 업로드','green',R('E','AG'),true),
- T('PR·광고','광고 기획','blue',R('C','D'),true),
- T('PR·광고','광고 촬영','blue',L('D'),true,'제주 콘텐츠 촬영 때 함께'),
- T('PR·광고','광고 편집·입고','blue',R('F','I'),true),
- T('PR·광고','오픈용 광고 제작','blue',R('W','Z'),true,'리뉴얼 공사 일정 확인 후 조정'),
- T('PR·광고','유튜브·메타 광고','yel',R('H','AF'),true,'1월 소액 → 2월 판매 본격 → 4~5월 집중'),
- T('PR·광고','공항광고 계약·심의','blue',R('I','K'),true),
- T('PR·광고','공항광고 게재','yel',R('L','AB'),true,'김포공항 무빙워크 등, 단가 입력 예정'),
- T('PR·광고','보도자료 작성·발송','green',L('L','AC'),true),
+ T('콘텐츠','유튜브 롱폼 제작','blue',[],true),
+ T('콘텐츠','유튜브 롱폼 업로드','green',[],false),
+ T('콘텐츠','인스타 게시글·릴스 제작','blue',[],true),
+ T('콘텐츠','인스타 게시글·릴스 업로드','green',[],true),
+ T('PR·광고','광고 기획','blue',[],true),
+ T('PR·광고','광고 촬영','blue',[],true),
+ T('PR·광고','광고 편집·입고','blue',[],true),
+ T('PR·광고','오픈용 광고 제작','blue',[],true),
+ T('PR·광고','유튜브·메타 광고','yel',[],true),
+ T('PR·광고','공항광고 계약·심의','blue',[],true),
+ T('PR·광고','공항광고 게재','yel',[],true),
+ T('PR·광고','보도자료 작성·발송','green',[],true),
  T('행사·체험','펫박람회 참가 검토','blue',R('H','I'),true),
  T('행사·체험','인플루언서 체험','yel',R('AA','AD'),true),
  T('행사·체험','프리오픈 초청','green',R('AB','AC'),true),
@@ -251,6 +251,7 @@ const SEED_DEC=[
  D('범위','회원권 분양·홍보 기획·예산·스케줄 미디어볼 일임','카톡 11/25','confirmed','카톡 확인'),
  D('예산','공항 옥외광고 비용 조사 포함','김포공항 무빙워크 우선, 국내 주요 공항','confirmed','카톡 확인')].map((d,i)=>({...d,id:'d'+String(i).padStart(2,'0'),createdAt:i}));
 const SEED_TIERS=[{name:'Founders',qty:300,price:'',sold:0,benefit:''},{name:'Standard',qty:800,price:'',sold:0,benefit:''},{name:'Premium',qty:300,price:'',sold:0,benefit:''}];
+const MIG1=t=>{const ren={'숏폼 제작':'인스타 게시글·릴스 제작','숏폼·SNS 업로드':'인스타 게시글·릴스 업로드'};const clear=t.g==='콘텐츠'||t.g==='PR·광고';return {name:ren[t.name]||t.name,cells:clear?{}:t.cells,note:clear?'':(t.note||'')}};
 const SEED_SET={openDate:'',saleDate:'',scenMin:'',scenAgg:'',tiers:SEED_TIERS,memberNote:'5년 보증금형 (사업·공간 레퍼런스 v2 기획안 기준)'};
 const DOC_CATS=['리서치','기획','예산','회의','기타'];
 const SEED_DOCS=[{id:'k00',title:'PUMAN JEJU 확정 사항 정리',cat:'기획',body:"# PUMAN IN JEJU 회원권·홍보 기획 — 확정 사항 정리\n\n- 작성: 2026-11-25\n- 기준: 카톡(2026-11-23, 11-25), 공유 자료 2종(사업·공간 레퍼런스 v2, 인테리어 디자인북 2026.10)\n- 이 문서에는 위 출처에서 확인된 내용만 넣었습니다. 기획 페이지의 예시 숫자(CPA 2만 원, 구매 비율 10% 등)는 가정이라 제외했습니다.\n\n---\n\n## 1. 결정 사항\n\n| 항목 | 내용 | 출처 |\n|---|---|---|\n| 업무 위임 | 리조트 회원권 분양과 홍보의 기획·예산·스케줄을 배감독(미디어볼)에게 일임. \"이번 프로젝트부터 함께 갈 생각\" | 카톡 11-25 |\n| 수락 | \"부족하지만 맡겨주신다면 열심히 잘 해보겠습니다\"로 수락 | 카톡 11-25 |\n| 오픈 시기 | 2027년 5~6월 | 카톡 11-23, 11-25 |\n| 회원권 판매 시작 | 2027년 2월 | 카톡 11-25 |\n| 공항 광고 조사 | 김포공항 무빙워크 광고판 비용 조사 요청 → 김포 및 국내 주요 공항 OOH 비용을 확인해 기획안에 넣기로 함 | 카톡 11-25 |\n| 1차 공유 | 기획안을 이번 주말(11월 28~29일)쯤 공유하기로 함 | 카톡 11-25 |\n| 완료된 일 | 킨텍스 메가주 답사 후 부스 구성·향후 이벤트 방안 정리해 전달 | 대화 11-23 |\n\n### 자료에서 확인된 사업 기본 정보\n\n자료에 \"기획안\"으로 적혀 있어 바뀔 수 있는 내용입니다.\n\n| 항목 | 내용 |\n|---|---|\n| 사업 | 제주 애월 반려동물 동반 라이프스타일 리조트, 기존 건물 리뉴얼형 |\n| 객실 | 97실 (Studio 30.33㎡ 76실 / Two-Room 55.53㎡ 19실 / Grand Two-Room 111.06㎡ 2실) |\n| 멤버십 기획안 | Founders 300 · Standard 800 · Premium 300 = 총 1,400구좌, 5년 보증금형 |\n| 고객 구조 | 멤버십 고객 / 일반 숙박 고객 / 로컬·데이유즈 / 반려동물 서비스 이용 고객 |\n| 주요 시설 | B1 그루밍·스파·유치원·위탁호텔·건강관리·편의점 / 1F 로비·F&B·편집숍(B안) / 옥상 F&B 70석·피트니스·도가·회원 전용 도서관 / 대형견·중소형견 분리 운동장 |\n\n---\n\n## 2. 예산 항목\n\n리조트 측이 직접 요청한 항목은 하나이고, 나머지는 기획 단계에서 정리한 구성안입니다. 리조트 측 승인 전입니다.\n\n| 항목 | 상태 | 비고 |\n|---|---|---|\n| 공항 옥외광고(OOH) | **리조트 측 요청 항목** | 김포공항 무빙워크 우선, 국내 주요 공항 포함 |\n| 콘텐츠 제작비 | 구성안 | 리뉴얼 연재 영상, 숏폼, 사진, 디자인, 소개 페이지 |\n| 광고 집행비 | 구성안 | 유튜브·인스타 광고, 리타겟팅 |\n| 오프라인비 | 구성안 | 박람회 부스, 설명회, 그랜드 오픈 행사 |\n| 협업비 | 구성안 | 인플루언서, 제휴 |\n| 기획·운영비 | 구성안 | 미디어볼 몫, 별도 항목으로 표기 |\n| 예비비 | 구성안 | 전체의 10% 안팎 |\n\n---\n\n## 3. 금액\n\n**확정된 금액은 없습니다.**\n\n- 전체 예산 규모: 미정\n- 항목별 금액: 미정\n- 공항 광고 단가: 조사 전\n- 회원권 가격·보증금: 미정\n\n---\n\n## 4. 미정 사항 (리조트 측에 확인 필요)\n\n### 회원권\n- [ ] 등급별(Founders / Standard / Premium) 가격과 보증금\n- [ ] 회원 혜택: 연간 숙박 일수, 성수기 예약 규칙\n- [ ] 1,400구좌를 오픈 전에 다 판매하는 게 목표인지\n- [ ] 5년 보증금형 광고 문구에 대한 법률 검토 여부\n\n### 범위·조직\n- [ ] 분양 영업팀이나 분양 대행사가 따로 있는지\n- [ ] 미디어볼이 맡는 범위 (기획만 / 광고 운영까지 / 상담·설명회까지)\n- [ ] 계약·정산 방식, 매체비 결제 주체\n\n### 예산\n- [ ] 전체 예산 규모 (최소안·적정안·공격안 기준을 잡을 숫자)\n- [ ] 공항 OOH 실제 단가와 계약 기간\n\n### 시설·일정\n- [ ] 리뉴얼 공사 일정\n- [ ] 1층 B안(객실 한 줄을 F&B·편집숍으로 전환) 확정 여부와 최종 객실 수\n- [ ] 로고·브랜드 가이드 유무\n",link:'',from:'',createdAt:Date.parse('2026-11-25T15:13:00+09:00')}];
@@ -272,6 +273,7 @@ const SEED_CON=[
 
 // ---------- 저장소: Firebase 또는 미리보기(이 브라우저) ----------
 const CFG=window.PUMAN_CONFIG; let S={settings:{...SEED_SET},decisions:[],tasks:[],contents:[],docs:[]};
+let settingsLoaded=false;
 let me={name:'미디어볼',email:'',role:'admin',id:'미디어볼'}; let api; let LOCAL=true;
 // 결정·자료는 개인이 아니라 소속(미디어볼 / 푸만) 단위로 주고받는다
 const ORGS=()=>LOCAL?['미디어볼','푸만']:(CFG.orgs||['미디어볼','푸만']);
@@ -289,6 +291,7 @@ function localApi(){
   if(!S.contents)S.contents=SEED_CON;
   if(!S.docs)S.docs=SEED_DOCS;
   S.tasks.forEach(t=>{if(t.name==='기획·운영 (미디어볼 월 고정)')t.name='기획·운영'});
+  if(!S.settings.mig1){S.tasks=S.tasks.map(t=>({...t,...MIG1(t)}));S.settings.mig1=true}
   S.decisions.forEach(d=>{['from','to'].forEach(k=>{d[k]=nameOf(d[k])});if(d.confirmedBy)d.confirmedBy=d.confirmedBy.replace(/^(형님|현우|호정) 확인$/,m=>({'형님 확인':'푸만 확인','현우 확인':'푸만 확인','호정 확인':'미디어볼 확인'})[m])});(S.docs||[]).forEach(k=>{if(k.from)k.from=nameOf(k.from)});
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};draw()};
   return{
@@ -318,12 +321,14 @@ async function fireApi(){
       if(!admins.includes(em)&&!members.includes(em)){showDenied(em,()=>A.signOut(auth));return}
       me={name:orgOf(em)||em,email:em,id:orgOf(em)||em,role:admins.includes(em)?'admin':'member',logout:()=>A.signOut(auth)};
       const c=n=>F.collection(db,n);
-      F.onSnapshot(F.doc(db,'settings','main'),s=>{S.settings={...SEED_SET,...(s.data()||{})};draw()});
+      F.onSnapshot(F.doc(db,'settings','main'),s=>{S.settings={...SEED_SET,...(s.data()||{})};settingsLoaded=true;draw()});
       F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('docs'),q=>{S.docs=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('tasks'),q=>{S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
-        if(me.role==='admin')S.tasks.filter(t=>t.name==='기획·운영 (미디어볼 월 고정)').forEach(t=>F.updateDoc(F.doc(db,'tasks',t.id),{name:'기획·운영'}));draw()});
+        if(me.role==='admin'){S.tasks.filter(t=>t.name==='기획·운영 (미디어볼 월 고정)').forEach(t=>F.updateDoc(F.doc(db,'tasks',t.id),{name:'기획·운영'}));
+          if(S.tasks.length&&settingsLoaded&&!S.settings.mig1){S.tasks.forEach(t=>{const m=MIG1(t);F.updateDoc(F.doc(db,'tasks',t.id),{name:m.name,cells:m.cells,note:m.note})});F.setDoc(F.doc(db,'settings','main'),{mig1:true},{merge:true})}}
+        draw()});
       res({
         setSettings:p=>F.setDoc(F.doc(db,'settings','main'),p,{merge:true}),
         addDecision:d=>F.addDoc(c('decisions'),{...d,createdAt:Date.now()}),
@@ -336,7 +341,7 @@ async function fireApi(){
         updateContent:(id,p)=>F.updateDoc(F.doc(db,'contents',id),p),
         deleteContent:id=>F.deleteDoc(F.doc(db,'contents',id)),
         setCell:(tid,w,v)=>F.updateDoc(F.doc(db,'tasks',tid),{['cells.'+w]:v===null?F.deleteField():v}),
-        seed:async()=>{const b=F.writeBatch(db);SEED_TASKS.forEach(t=>{const{id,...r}=t;b.set(F.doc(db,'tasks',id),r)});SEED_DEC.forEach(d=>{const{id,...r}=normD(d);b.set(F.doc(db,'decisions',id),r)});SEED_DOCS.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'docs',id),{...r,from:ADMIN0()})});SEED_CON.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'contents',id),r)});b.set(F.doc(db,'settings','main'),SEED_SET,{merge:true});await b.commit()}
+        seed:async()=>{const b=F.writeBatch(db);SEED_TASKS.forEach(t=>{const{id,...r}=t;b.set(F.doc(db,'tasks',id),r)});SEED_DEC.forEach(d=>{const{id,...r}=normD(d);b.set(F.doc(db,'decisions',id),r)});SEED_DOCS.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'docs',id),{...r,from:ADMIN0()})});SEED_CON.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'contents',id),r)});b.set(F.doc(db,'settings','main'),{...SEED_SET,mig1:true},{merge:true});await b.commit()}
       });
     });
   });
