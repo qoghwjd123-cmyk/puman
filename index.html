@@ -138,7 +138,7 @@ table.cl{width:100%;border-collapse:collapse;font-size:15px}
 .turn{font-style:normal;font-size:11px;font-weight:700;background:var(--rose);color:#fff;border-radius:99px;padding:1px 7px;margin-left:6px;vertical-align:1px}
 .wait{width:20px;text-align:center;color:var(--mute);font-weight:700;margin-top:2px}
 .dir{font-size:12px;color:var(--oak);margin-top:4px}.dir a{color:var(--rose)}
-.dadd{display:grid;grid-template-columns:auto minmax(0,2fr) minmax(0,.8fr) minmax(0,1.6fr) auto;gap:8px;align-items:center}
+.dadd{display:grid;grid-template-columns:auto minmax(0,2fr) minmax(0,.8fr) auto;gap:8px;align-items:center}
 .dadd input,.dadd select,.dlist>input{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px 10px;font-size:15px;min-height:42px;width:100%}
 .file{position:relative;display:flex;align-items:center;border:1px dashed var(--oak);border-radius:8px;padding:0 14px;min-height:42px;cursor:pointer;color:var(--oak);font-weight:600;font-size:14px;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
 .file input{position:absolute;inset:0;opacity:0;cursor:pointer}
@@ -146,8 +146,13 @@ table.cl{width:100%;border-collapse:collapse;font-size:15px}
 .dlist{display:flex;flex-direction:column;gap:6px;padding:12px}.dlist>input{margin-bottom:6px}
 .ditem{text-align:left;border:1px solid transparent;background:transparent;border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
 .ditem:hover{background:var(--soft)}.ditem.on{background:var(--soft);border-color:var(--line)}.ditem b{font-size:14px;line-height:1.4}.ditem .sub{margin:0;font-size:12px}.ditem .tag{align-self:flex-start}
-.dadd.txt{grid-template-columns:minmax(0,2fr) minmax(0,.8fr) minmax(0,1.6fr) auto}.dadd textarea,.kedit textarea{grid-column:1/-1;min-height:160px;resize:vertical;border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:10px 12px;font:inherit;font-size:15px;line-height:1.6;color:inherit}
+.dadd.txt{grid-template-columns:minmax(0,2fr) minmax(0,.8fr) auto}.dadd textarea,.kedit textarea{grid-column:1/-1;min-height:160px;resize:vertical;border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:10px 12px;font:inherit;font-size:15px;line-height:1.6;color:inherit}
 .kedit{display:flex;flex-direction:column;gap:8px}.kedit input{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px 10px;font-size:16px;font-weight:600}.kedit textarea{min-height:360px}.kedit .btn{align-self:flex-end}
+.lbox{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}.lbox summary{cursor:pointer;font-weight:600;font-size:14px}.lbox .sub{display:inline;margin:0;font-weight:400}
+.lgrp{margin-top:10px;display:flex;flex-direction:column;gap:2px}.lgh{font-size:12px;font-weight:700;color:var(--mute);margin-bottom:2px}
+.lrow{display:flex;align-items:center;gap:8px;padding:6px 4px;border-radius:6px;font-size:14px;cursor:pointer}.lrow:hover{background:var(--soft)}.lrow input{width:16px;height:16px;accent-color:var(--rose)}.lrow .tag{margin:0}
+.dview .lbox{margin:0 0 12px}
+.linked{margin:0 0 6px;font-size:13px;color:var(--mute);background:var(--soft);border-radius:8px;padding:8px 12px}.linked b{color:var(--ink)}
 .dview{padding:22px 26px;min-height:420px}.dhead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:8px}
 .dhead .sub{margin:0 0 0 4px;display:inline}.dact{display:flex;gap:6px;align-items:center}.dact select{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:6px 8px;font-size:13px;max-width:240px;min-height:36px}
 .mdv{font-size:15px;line-height:1.7;max-width:760px}.mdv h1{font-size:24px;line-height:1.3;margin:12px 0 10px}.mdv h2{font-size:19px;margin:26px 0 8px}.mdv h3{font-size:16px;margin:20px 0 6px}
@@ -369,7 +374,7 @@ function dash(){
   const PL=PEOPLE().slice().sort((a,b)=>(a===MEMBER0()?-1:0)-(b===MEMBER0()?-1:0));
   const tabId=PL.includes(decBox)?decBox:me.id;
   const box=pend.filter(d=>d.to===tabId);
-  const docOf=id=>(S.docs||[]).filter(k=>k.link===id);
+  const docOf=id=>(S.docs||[]).filter(k=>linksOf(k).includes(id));
   const w=curWeek(),before=new Date()<START;
   const curM=MONTHS.find(m=>w>=m[1]&&w<=m[2])||MONTHS[0];
   const wk=S.tasks.filter(t=>(t.cells||{})[w]!==undefined);
@@ -527,7 +532,10 @@ function content(){
 
 // ---------- 자료 ----------
 const mdHtml=(t,br)=>{try{return window.DOMPurify&&window.marked?DOMPurify.sanitize(marked.parse(t||'',{breaks:!!br})):'<div style="white-space:pre-wrap">'+esc(t)+'</div>'}catch(e){return '<div style="white-space:pre-wrap">'+esc(t)+'</div>'}};
-let docQ='',upMode='md',editing=false;
+let docQ='',upMode='md',editing=false,lboxOpen=false;
+const linksOf=k=>Array.isArray(k.links)?k.links:(k.link?[k.link]:[]);
+const decChecks=(list,sel,cls)=>{const groups=ORGS().map(o=>{const its=list.filter(d=>d.to===o&&(d.status!=='confirmed'||sel.includes(d.id)));return its.length?`<div class="lgrp"><span class="lgh">${esc(o)} 확인 대기</span>${its.map(d=>`<label class="lrow"><input type="checkbox" class="${cls}" value="${esc(d.id)}"${sel.includes(d.id)?' checked':''}><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</label>`).join('')}</div>`:''}).join('');return groups||'<p class="sub" style="margin:0">연결할 결정 항목이 없어요.</p>'};
+const decOpts=(list,sel)=>ORGS().map(o=>{const its=list.filter(d=>d.to===o&&(d.status!=='confirmed'||d.id===sel));return its.length?`<optgroup label="${esc(o)} 확인 대기">${its.map(d=>`<option value="${esc(d.id)}"${d.id===sel?' selected':''}>[${esc(d.cat)}] ${esc(d.title)}</option>`).join('')}</optgroup>`:''}).join('');
 function docs(){
   const all=(S.docs||[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
   const list=all.filter(k=>!docQ||(k.title+k.body).toLowerCase().includes(docQ.toLowerCase()));
@@ -541,13 +549,14 @@ function docs(){
    <div class="seg dseg"><button data-up="md" class="${upMode==='md'?'on':''}">md 파일</button><button data-up="text" class="${upMode==='text'?'on':''}">직접 쓰기</button></div>
    <form class="dadd${upMode==='text'?' txt':''}" id="kf">${upMode==='md'?`<label class="file"><input type="file" id="kfile" accept=".md,.markdown,.txt,text/markdown,text/plain"><span id="kfname">md 파일 고르기</span></label>`:''}
     <input id="kt" placeholder="${upMode==='md'?'제목 (비우면 파일의 첫 제목)':'제목'}" aria-label="제목"${upMode==='text'?' required':''}><select id="kc" aria-label="분류">${DOC_CATS.map(c=>`<option>${c}</option>`).join('')}</select>
-    <select id="kl" aria-label="연결할 결정 항목"><option value="">결정 항목 연결 안 함</option>${D.map(d=>`<option value="${esc(d.id)}">${esc(d.title)}</option>`).join('')}</select><button class="btn">올리기</button>
+    <button class="btn">올리기</button>
     ${upMode==='text'?'<textarea id="kbody" placeholder="내용을 쓰거나 붙여넣어 주세요. 줄바꿈은 그대로 보여요." aria-label="내용" required></textarea>':''}</form>
+   <details class="lbox"><summary>결정 항목 연결하기 <span class="sub">(선택 · 이 자료를 근거로 붙일 항목)</span></summary>${decChecks(D,[],'kl')}</details>
    <p class="sub" id="kmsg"></p></div>
   <section class="docs">
    <div class="card dlist"><input id="kq" placeholder="자료 검색" value="${esc(docQ)}" aria-label="자료 검색">
-    ${list.length?list.map(k=>{const ln=S.decisions.find(d=>d.id===k.link);return `<button class="ditem${k.id===openDoc?' on':''}" data-k="${esc(k.id)}"><span class="tag">${esc(k.cat)}</span><b>${esc(k.title)}</b><span class="sub">${dt(k.createdAt)}${k.from?' · '+esc(nameOf(k.from)):''}${ln?' · 결정: '+esc(ln.title):''}</span></button>`}).join(''):'<p class="empty">아직 올린 자료가 없어요.</p>'}</div>
-   <article class="card dview">${cur?`<div class="dhead"><div><span class="tag">${esc(cur.cat)}</span><span class="sub">${dt(cur.createdAt)}${cur.from?' · '+esc(nameOf(cur.from))+' 올림':''}</span></div>${canEd(cur)?`<div class="dact"><select id="kl2" aria-label="결정 항목 연결"><option value="">결정 항목 연결 안 함</option>${S.decisions.map(normD).map(d=>`<option value="${esc(d.id)}"${d.id===cur.link?' selected':''}>${esc(d.title)}</option>`).join('')}</select><button class="x" id="kedit">${editing?'취소':'수정'}</button><button class="x" id="kdel">삭제</button></div>`:''}</div>${editing&&canEd(cur)?`<form id="kef" class="kedit"><input id="ket" value="${esc(cur.title)}" aria-label="제목" required><textarea id="keb" aria-label="내용">${esc(cur.body)}</textarea><button class="btn">저장</button></form>`:`<div class="mdv">${cur.kind==='text'?`<h1>${esc(cur.title)}</h1>`:''}${mdHtml(cur.body,cur.kind==='text')}</div>`}`:'<p class="empty">왼쪽에서 자료를 골라주세요.</p>'}</article>
+    ${list.length?list.map(k=>{const ln=S.decisions.find(d=>linksOf(k).includes(d.id));return `<button class="ditem${k.id===openDoc?' on':''}" data-k="${esc(k.id)}"><span class="tag">${esc(k.cat)}</span><b>${esc(k.title)}</b><span class="sub">${dt(k.createdAt)}${k.from?' · '+esc(nameOf(k.from)):''}${ln?' · 결정: '+esc(ln.title)+(linksOf(k).length>1?' 외 '+(linksOf(k).length-1):''):''}</span></button>`}).join(''):'<p class="empty">아직 올린 자료가 없어요.</p>'}</div>
+   <article class="card dview">${cur?`<div class="dhead"><div><span class="tag">${esc(cur.cat)}</span><span class="sub">${dt(cur.createdAt)}${cur.from?' · '+esc(nameOf(cur.from))+' 올림':''}</span></div>${canEd(cur)?`<div class="dact"><button class="x" id="kedit">${editing?'취소':'수정'}</button><button class="x" id="kdel">삭제</button></div>`:''}</div>${editing&&canEd(cur)?`<form id="kef" class="kedit"><input id="ket" value="${esc(cur.title)}" aria-label="제목" required><textarea id="keb" aria-label="내용">${esc(cur.body)}</textarea><button class="btn">저장</button></form>`:`${(()=>{const ls=linksOf(cur).map(id=>S.decisions.find(d=>d.id===id)).filter(Boolean);return (ls.length?`<p class="linked">연결된 결정 · ${ls.map(d=>`<b>${esc(d.title)}</b>`).join(' · ')}</p>`:'')+(canEd(cur)&&!editing?`<details class="lbox"><summary>결정 항목 연결하기</summary>${decChecks(S.decisions.map(normD),linksOf(cur),'kl2')}</details>`:'')})()}<div class="mdv">${cur.kind==='text'?`<h1>${esc(cur.title)}</h1>`:''}${mdHtml(cur.body,cur.kind==='text')}</div>`}`:'<p class="empty">왼쪽에서 자료를 골라주세요.</p>'}</article>
   </section>`);
   let fileText='',fileName='';
   app.querySelectorAll('[data-up]').forEach(x=>x.onclick=()=>{upMode=x.dataset.up;draw()});
@@ -558,12 +567,13 @@ function docs(){
     if(upMode==='md'){if(!fileText){m.textContent='먼저 md 파일을 골라주세요.';return}body=fileText;kind='md'}
     else{body=app.querySelector('#kbody').value;if(!body.trim()){m.textContent='내용을 써 주세요.';return}if(body.length>800000){m.textContent='내용이 너무 길어요.';return}kind='text'}
     const t=app.querySelector('#kt').value.trim()||app.querySelector('#kt').placeholder;
-    const id=await api.addDoc({title:t,cat:app.querySelector('#kc').value,link:app.querySelector('#kl').value,body,kind,from:me.id,file:fileName});openDoc=id||openDoc;editing=false;draw()};
+    const id=await api.addDoc({title:t,cat:app.querySelector('#kc').value,links:[...app.querySelectorAll('.kl:checked')].map(x=>x.value),body,kind,from:me.id,file:fileName});openDoc=id||openDoc;editing=false;draw()};
   const ke=app.querySelector('#kedit');if(ke)ke.onclick=()=>{editing=!editing;draw()};
   const kef=app.querySelector('#kef');if(kef)kef.onsubmit=ev=>{ev.preventDefault();editing=false;api.updateDoc(cur.id,{title:kef.querySelector('#ket').value.trim()||cur.title,body:kef.querySelector('#keb').value})};
   const kq=app.querySelector('#kq');kq.oninput=()=>{docQ=kq.value;const pos=kq.selectionStart;draw();const n=app.querySelector('#kq');n.focus();n.setSelectionRange(pos,pos)};
-  app.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{openDoc=b.dataset.k;editing=false;draw();if(innerWidth<900)app.querySelector('.dview').scrollIntoView({behavior:'smooth'})});
-  const l2=app.querySelector('#kl2');if(l2)l2.onchange=()=>api.updateDoc(cur.id,{link:l2.value});
+  app.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{openDoc=b.dataset.k;editing=false;lboxOpen=false;draw();if(innerWidth<900)app.querySelector('.dview').scrollIntoView({behavior:'smooth'})});
+  app.querySelectorAll('.kl2').forEach(c=>c.onchange=()=>{lboxOpen=true;api.updateDoc(cur.id,{links:[...app.querySelectorAll('.kl2:checked')].map(x=>x.value),link:''})});
+  app.querySelectorAll('.dview .lbox').forEach(d=>{if(lboxOpen)d.open=true;d.ontoggle=()=>{lboxOpen=d.open}});
   const kd=app.querySelector('#kdel');if(kd)kd.onclick=()=>armDelete(kd,()=>{api.deleteDoc(cur.id);openDoc=null});
 }
 
