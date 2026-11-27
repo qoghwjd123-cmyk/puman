@@ -53,7 +53,7 @@ nav a.on{background:var(--ink);color:var(--bg)}nav a.off{opacity:.45;pointer-eve
 .tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--soft);color:var(--oak);margin-right:6px;vertical-align:1px}
 .x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:13px;padding:4px 6px;min-height:32px}
 .x:hover{color:var(--rose)}
-.add{display:grid;grid-template-columns:110px minmax(0,1fr) 170px auto;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.add{display:grid;grid-template-columns:110px minmax(0,1fr) 170px auto;gap:8px;margin:0 0 14px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
 .add textarea{grid-column:1/-1;resize:vertical;min-height:44px}
 .add input,.add select,.add textarea{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px 10px;font-size:16px;font-family:inherit;color:inherit}
 .btn{border:0;background:var(--ink);color:var(--bg);border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer;min-height:40px}
@@ -387,9 +387,9 @@ function dash(){
   </section>
   <section class="row2">
    <div class="card"><div class="head"><h2>결정할 것</h2><p class="sub">받은 사람이 체크하면 확정됨으로 옮겨져요</p></div>
+    <form class="add" id="addf"><select id="ncat" aria-label="분류">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input id="nt" placeholder="물어볼 것 (예: 공항광고 게재 기간)" aria-label="제목" required><select id="nto" aria-label="받는 사람">${PEOPLE().filter(p=>p!==me.id).map(p=>`<option value="${esc(p)}">${esc(nameOf(p))} 확인 요청</option>`).join('')}</select><button class="btn">추가</button><textarea id="nd" hidden placeholder="확인해야 할 부분 (선택)" aria-label="확인할 부분"></textarea></form>
     <div class="seg dseg" role="tablist">${PL.map(p=>{const n=pend.filter(d=>d.to===p).length;return `<button data-box="${esc(p)}" class="${tabId===p?'on':''}">${esc(nameOf(p))} 확인 대기 ${n}${p===me.id&&n?'<i class="turn">내 차례</i>':''}</button>`}).join('')}</div>
     ${box.length?`<ul class="dec">${box.map(d=>{const canOk=d.to===me.id,canDel=isAdmin()||d.from===me.id,ks=docOf(d.id);return `<li>${canOk?`<input type="checkbox" data-ok="${esc(d.id)}" aria-label="${esc(d.title)} 확인">`:`<span class="wait" title="받은 사람이 확인해야 해요">…</span>`}${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="dir">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))}${ks.map(k=>` · <a href="#docs" data-open="${esc(k.id)}">근거 자료: ${esc(k.title)}</a>`).join('')}</div></div>`}${canDel?`<button class="x" data-del="${esc(d.id)}" aria-label="삭제">삭제</button>`:'<span></span>'}</li>`}).join('')}</ul>`:`<p class="empty">${esc(nameOf(tabId))} 확인 대기 항목이 없어요.</p>`}
-    <form class="add" id="addf"><select id="ncat" aria-label="분류">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input id="nt" placeholder="물어볼 것 (예: 공항광고 게재 기간)" aria-label="제목" required><select id="nto" aria-label="받는 사람">${PEOPLE().filter(p=>p!==me.id).map(p=>`<option value="${esc(p)}">${esc(nameOf(p))} 확인 요청</option>`).join('')}</select><button class="btn">추가</button><textarea id="nd" placeholder="확인해야 할 부분 (선택)" aria-label="확인할 부분"></textarea></form>
     <details class="done"${done.length?'':' hidden'}${done.some(d=>d.id===editDec)||doneOpen?' open':''}><summary>확정됨 ${done.length}건</summary><ul class="dec">${done.map(d=>`<li><span aria-hidden="true" style="color:var(--ok);font-weight:700">✓</span>${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="by">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))} · ${esc(d.confirmedBy||'')}${d.confirmedAt?' · '+md(new Date(d.confirmedAt)):''}</div></div>`}${isAdmin()||d.to===me.id?`<button class="x" data-undo="${esc(d.id)}">되돌리기</button>`:'<span></span>'}</li>`).join('')}</ul></details>
    </div>
    <div class="card"><div class="head"><h2>${before?'첫 주':'이번 주'} 할 일</h2><p class="sub">${md(wd(w))} ~ ${md(new Date(wd(w).getTime()+6*864e5))}</p></div>
@@ -407,6 +407,7 @@ function dash(){
   app.querySelectorAll('[data-open]').forEach(a=>a.onclick=()=>{openDoc=a.dataset.open});
   app.querySelectorAll('[data-del]').forEach(e=>e.onclick=()=>armDelete(e,()=>api.deleteDecision(e.dataset.del)));
   app.querySelectorAll('[data-undo]').forEach(e=>e.onclick=()=>api.updateDecision(e.dataset.undo,{status:'pending',confirmedAt:null,confirmedBy:''}));
+  {const nt=app.querySelector('#nt'),nd=app.querySelector('#nd');if(nt&&nd){nt.addEventListener('input',()=>{if(nt.value.trim())nd.hidden=false});nt.addEventListener('focus',()=>{nd.hidden=false})}}
   const f=app.querySelector('#addf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#nt').value.trim();if(!t)return;decBox=f.querySelector('#nto').value;api.addDecision({cat:f.querySelector('#ncat').value,title:t,detail:f.querySelector('#nd').value.trim(),status:'pending',confirmedBy:'',from:me.id,to:f.querySelector('#nto').value})};
 }
 let doneOpen=false,decBox='',openDoc=null,editDec=null,editCon=null;
