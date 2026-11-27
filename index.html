@@ -153,6 +153,8 @@ table.cl{width:100%;border-collapse:collapse;font-size:15px}
 .lrow{display:flex;align-items:center;gap:8px;padding:6px 4px;border-radius:6px;font-size:14px;cursor:pointer}.lrow:hover{background:var(--soft)}.lrow input{width:16px;height:16px;accent-color:var(--rose)}.lrow .tag{margin:0}
 .dview .lbox{margin:0 0 12px}
 .linked{margin:0 0 6px;font-size:13px;color:var(--mute);background:var(--soft);border-radius:8px;padding:8px 12px}.linked b{color:var(--ink)}
+.hview{width:100%;height:600px;border:1px solid var(--line);border-radius:8px;background:#fff;display:block}
+.dview.full{position:fixed;inset:12px;z-index:60;overflow:auto;box-shadow:0 20px 60px rgb(0 0 0/.25)}
 .dview{padding:22px 26px;min-height:420px}.dhead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:8px}
 .dhead .sub{margin:0 0 0 4px;display:inline}.dact{display:flex;gap:6px;align-items:center}.dact select{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:6px 8px;font-size:13px;max-width:240px;min-height:36px}
 .mdv{font-size:15px;line-height:1.7;max-width:760px}.mdv h1{font-size:24px;line-height:1.3;margin:12px 0 10px}.mdv h2{font-size:19px;margin:26px 0 8px}.mdv h3{font-size:16px;margin:20px 0 6px}
@@ -533,22 +535,25 @@ function content(){
 // ---------- 자료 ----------
 const mdHtml=(t,br)=>{try{return window.DOMPurify&&window.marked?DOMPurify.sanitize(marked.parse(t||'',{breaks:!!br})):'<div style="white-space:pre-wrap">'+esc(t)+'</div>'}catch(e){return '<div style="white-space:pre-wrap">'+esc(t)+'</div>'}};
 let docQ='',upMode='md',editing=false,lboxOpen=false;
+// HTML 자료는 격리된 프레임(sandbox, 다른 출처)에서만 실행: 대시보드 데이터·로그인에 접근 불가
+const htmlDoc=b=>{const inj='<base target="_blank"><script>(function(){function s(){parent.postMessage({pumanH:Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0)},"*")}addEventListener("load",s);addEventListener("resize",s);setTimeout(s,300);setTimeout(s,1500)})()<\/script>';return /<head[^>]*>/i.test(b)?b.replace(/<head[^>]*>/i,m=>m+inj):inj+b};
+addEventListener('message',e=>{const f=document.getElementById('hview');if(f&&e.source===f.contentWindow&&e.data&&typeof e.data.pumanH==='number'){f.style.height=Math.min(Math.max(e.data.pumanH+8,300),20000)+'px'}});
 const linksOf=k=>Array.isArray(k.links)?k.links:(k.link?[k.link]:[]);
 const decChecks=(list,sel,cls)=>{const groups=ORGS().map(o=>{const its=list.filter(d=>d.to===o&&(d.status!=='confirmed'||sel.includes(d.id)));return its.length?`<div class="lgrp"><span class="lgh">${esc(o)} 확인 대기</span>${its.map(d=>`<label class="lrow"><input type="checkbox" class="${cls}" value="${esc(d.id)}"${sel.includes(d.id)?' checked':''}><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</label>`).join('')}</div>`:''}).join('');return groups||'<p class="sub" style="margin:0">연결할 결정 항목이 없어요.</p>'};
 const decOpts=(list,sel)=>ORGS().map(o=>{const its=list.filter(d=>d.to===o&&(d.status!=='confirmed'||d.id===sel));return its.length?`<optgroup label="${esc(o)} 확인 대기">${its.map(d=>`<option value="${esc(d.id)}"${d.id===sel?' selected':''}>[${esc(d.cat)}] ${esc(d.title)}</option>`).join('')}</optgroup>`:''}).join('');
 function docs(){
   const all=(S.docs||[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
-  const list=all.filter(k=>!docQ||(k.title+k.body).toLowerCase().includes(docQ.toLowerCase()));
+  const list=all.filter(k=>!docQ||(k.title+(k.kind==='html'?String(k.body).replace(/<[^>]+>/g,' '):k.body)).toLowerCase().includes(docQ.toLowerCase()));
   if(!openDoc||!all.find(k=>k.id===openDoc))openDoc=list[0]?.id||null;
   const cur=all.find(k=>k.id===openDoc);
   const D=S.decisions.map(normD).filter(d=>d.status!=='confirmed');
   const canEd=k=>isAdmin()||nameOf(k.from)===me.id;
   const dt=ms=>{const d=new Date(ms);return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`};
   shell('docs',`
-  <div class="card"><div class="head"><h2>자료 올리기</h2><p class="sub">md 파일을 올리거나, 카톡·메모 내용을 붙여넣어 바로 쓸 수 있어요</p></div>
-   <div class="seg dseg"><button data-up="md" class="${upMode==='md'?'on':''}">md 파일</button><button data-up="text" class="${upMode==='text'?'on':''}">직접 쓰기</button></div>
-   <form class="dadd${upMode==='text'?' txt':''}" id="kf">${upMode==='md'?`<label class="file"><input type="file" id="kfile" accept=".md,.markdown,.txt,text/markdown,text/plain"><span id="kfname">md 파일 고르기</span></label>`:''}
-    <input id="kt" placeholder="${upMode==='md'?'제목 (비우면 파일의 첫 제목)':'제목'}" aria-label="제목"${upMode==='text'?' required':''}><select id="kc" aria-label="분류">${DOC_CATS.map(c=>`<option>${c}</option>`).join('')}</select>
+  <div class="card"><div class="head"><h2>자료 올리기</h2><p class="sub">md·HTML 파일을 올리거나, 카톡·메모 내용을 붙여넣어 바로 쓸 수 있어요</p></div>
+   <div class="seg dseg"><button data-up="md" class="${upMode==='md'?'on':''}">md 파일</button><button data-up="html" class="${upMode==='html'?'on':''}">HTML 파일</button><button data-up="text" class="${upMode==='text'?'on':''}">직접 쓰기</button></div>
+   <form class="dadd${upMode==='text'?' txt':''}" id="kf">${upMode!=='text'?`<label class="file"><input type="file" id="kfile" accept="${upMode==='html'?'.html,.htm,text/html':'.md,.markdown,.txt,text/markdown,text/plain'}"><span id="kfname">${upMode==='html'?'HTML 파일 고르기':'md 파일 고르기'}</span></label>`:''}
+    <input id="kt" placeholder="${upMode==='text'?'제목':'제목 (비우면 파일의 제목)'}" aria-label="제목"${upMode==='text'?' required':''}><select id="kc" aria-label="분류">${DOC_CATS.map(c=>`<option>${c}</option>`).join('')}</select>
     <button class="btn">올리기</button>
     ${upMode==='text'?'<textarea id="kbody" placeholder="내용을 쓰거나 붙여넣어 주세요. 줄바꿈은 그대로 보여요." aria-label="내용" required></textarea>':''}</form>
    <details class="lbox"><summary>결정 항목 연결하기 <span class="sub">(선택 · 이 자료를 근거로 붙일 항목)</span></summary>${decChecks(D,[],'kl')}</details>
@@ -556,18 +561,20 @@ function docs(){
   <section class="docs">
    <div class="card dlist"><input id="kq" placeholder="자료 검색" value="${esc(docQ)}" aria-label="자료 검색">
     ${list.length?list.map(k=>{const ln=S.decisions.find(d=>linksOf(k).includes(d.id));return `<button class="ditem${k.id===openDoc?' on':''}" data-k="${esc(k.id)}"><span class="tag">${esc(k.cat)}</span><b>${esc(k.title)}</b><span class="sub">${dt(k.createdAt)}${k.from?' · '+esc(nameOf(k.from)):''}${ln?' · 결정: '+esc(ln.title)+(linksOf(k).length>1?' 외 '+(linksOf(k).length-1):''):''}</span></button>`}).join(''):'<p class="empty">아직 올린 자료가 없어요.</p>'}</div>
-   <article class="card dview">${cur?`<div class="dhead"><div><span class="tag">${esc(cur.cat)}</span><span class="sub">${dt(cur.createdAt)}${cur.from?' · '+esc(nameOf(cur.from))+' 올림':''}</span></div>${canEd(cur)?`<div class="dact"><button class="x" id="kedit">${editing?'취소':'수정'}</button><button class="x" id="kdel">삭제</button></div>`:''}</div>${editing&&canEd(cur)?`<form id="kef" class="kedit"><input id="ket" value="${esc(cur.title)}" aria-label="제목" required><textarea id="keb" aria-label="내용">${esc(cur.body)}</textarea><button class="btn">저장</button></form>`:`${(()=>{const ls=linksOf(cur).map(id=>S.decisions.find(d=>d.id===id)).filter(Boolean);return (ls.length?`<p class="linked">연결된 결정 · ${ls.map(d=>`<b>${esc(d.title)}</b>`).join(' · ')}</p>`:'')+(canEd(cur)&&!editing?`<details class="lbox"><summary>결정 항목 연결하기</summary>${decChecks(S.decisions.map(normD),linksOf(cur),'kl2')}</details>`:'')})()}<div class="mdv">${cur.kind==='text'?`<h1>${esc(cur.title)}</h1>`:''}${mdHtml(cur.body,cur.kind==='text')}</div>`}`:'<p class="empty">왼쪽에서 자료를 골라주세요.</p>'}</article>
+   <article class="card dview">${cur?`<div class="dhead"><div><span class="tag">${esc(cur.cat)}</span><span class="sub">${dt(cur.createdAt)}${cur.from?' · '+esc(nameOf(cur.from))+' 올림':''}</span></div>${canEd(cur)?`<div class="dact">${cur.kind==='html'?'<button class="x" id="kfull">크게 보기</button>':`<button class="x" id="kedit">${editing?'취소':'수정'}</button>`}<button class="x" id="kdel">삭제</button></div>`:''}</div>${editing&&canEd(cur)?`<form id="kef" class="kedit"><input id="ket" value="${esc(cur.title)}" aria-label="제목" required><textarea id="keb" aria-label="내용">${esc(cur.body)}</textarea><button class="btn">저장</button></form>`:`${(()=>{const ls=linksOf(cur).map(id=>S.decisions.find(d=>d.id===id)).filter(Boolean);return (ls.length?`<p class="linked">연결된 결정 · ${ls.map(d=>`<b>${esc(d.title)}</b>`).join(' · ')}</p>`:'')+(canEd(cur)&&!editing?`<details class="lbox"><summary>결정 항목 연결하기</summary>${decChecks(S.decisions.map(normD),linksOf(cur),'kl2')}</details>`:'')})()}${cur.kind==='html'?'<iframe class="hview" id="hview" title="HTML 자료" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>':`<div class="mdv">${cur.kind==='text'?`<h1>${esc(cur.title)}</h1>`:''}${mdHtml(cur.body,cur.kind==='text')}</div>`}`}`:'<p class="empty">왼쪽에서 자료를 골라주세요.</p>'}</article>
   </section>`);
   let fileText='',fileName='';
   app.querySelectorAll('[data-up]').forEach(x=>x.onclick=()=>{upMode=x.dataset.up;draw()});
   const fi=app.querySelector('#kfile');
-  if(fi)fi.onchange=()=>{const f=fi.files[0];if(!f)return;if(f.size>800000){app.querySelector('#kmsg').textContent='파일이 너무 커요. 800KB 이하 md 파일만 올릴 수 있어요.';fi.value='';return}
-    const r=new FileReader();r.onload=()=>{fileText=String(r.result);fileName=f.name;app.querySelector('#kfname').textContent=f.name;const h=fileText.match(/^#\s+(.+)$/m);const t=app.querySelector('#kt');if(!t.value)t.placeholder=h?h[1].trim():f.name.replace(/\.[^.]+$/,'')};r.readAsText(f,'utf-8')};
+  if(fi)fi.onchange=()=>{const f=fi.files[0];if(!f)return;if(f.size>800000){app.querySelector('#kmsg').textContent='파일이 너무 커요. 800KB 이하 파일만 올릴 수 있어요.';fi.value='';return}
+    const r=new FileReader();r.onload=()=>{fileText=String(r.result);fileName=f.name;app.querySelector('#kfname').textContent=f.name;const h=upMode==='html'?fileText.match(/<title[^>]*>([^<]+)<\/title>/i):fileText.match(/^#\s+(.+)$/m);const t=app.querySelector('#kt');if(!t.value)t.placeholder=h?h[1].trim():f.name.replace(/\.[^.]+$/,'')};r.readAsText(f,'utf-8')};
   app.querySelector('#kf').onsubmit=async ev=>{ev.preventDefault();const m=app.querySelector('#kmsg');let body,kind;
-    if(upMode==='md'){if(!fileText){m.textContent='먼저 md 파일을 골라주세요.';return}body=fileText;kind='md'}
+    if(upMode!=='text'){if(!fileText){m.textContent='먼저 파일을 골라주세요.';return}body=fileText;kind=upMode}
     else{body=app.querySelector('#kbody').value;if(!body.trim()){m.textContent='내용을 써 주세요.';return}if(body.length>800000){m.textContent='내용이 너무 길어요.';return}kind='text'}
     const t=app.querySelector('#kt').value.trim()||app.querySelector('#kt').placeholder;
     const id=await api.addDoc({title:t,cat:app.querySelector('#kc').value,links:[...app.querySelectorAll('.kl:checked')].map(x=>x.value),body,kind,from:me.id,file:fileName});openDoc=id||openDoc;editing=false;draw()};
+  const hv=app.querySelector('#hview');if(hv&&cur){hv.srcdoc=htmlDoc(cur.body);}
+  const kfl=app.querySelector('#kfull');if(kfl)kfl.onclick=()=>{const v=app.querySelector('.dview');v.classList.toggle('full');kfl.textContent=v.classList.contains('full')?'작게 보기':'크게 보기'};
   const ke=app.querySelector('#kedit');if(ke)ke.onclick=()=>{editing=!editing;draw()};
   const kef=app.querySelector('#kef');if(kef)kef.onsubmit=ev=>{ev.preventDefault();editing=false;api.updateDoc(cur.id,{title:kef.querySelector('#ket').value.trim()||cur.title,body:kef.querySelector('#keb').value})};
   const kq=app.querySelector('#kq');kq.oninput=()=>{docQ=kq.value;const pos=kq.selectionStart;draw();const n=app.querySelector('#kq');n.focus();n.setSelectionRange(pos,pos)};
