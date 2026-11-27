@@ -229,6 +229,7 @@ const SEED_TASKS=[
  T('행사·체험','인플루언서 체험','yel',R('AA','AD'),true),
  T('행사·체험','프리오픈 초청','green',R('AB','AC'),true),
  T('행사·체험','일반 예약 프로모션','yel',R('AD','AG'),true)].map((t,i)=>({...t,id:'t'+String(i).padStart(2,'0'),order:i}));
+const PLAN_TASK={...T('콘텐츠','콘텐츠 기획','blue',[],true),id:'t24',order:7.5};SEED_TASKS.push(PLAN_TASK);SEED_TASKS.sort((a,b)=>a.order-b.order);
 const D=(cat,title,detail,status='pending',by='')=>({cat,title,detail,status,confirmedBy:by,createdAt:Date.now(),from:'미디어볼',to:'푸만'});
 const SEED_DEC=[
  D('회원권','등급별 가격과 보증금','Founders 300 · Standard 800 · Premium 300 구좌별 금액'),
@@ -291,6 +292,7 @@ function localApi(){
   if(!S.docs)S.docs=SEED_DOCS;
   S.tasks.forEach(t=>{if(t.name==='기획·운영 (미디어볼 월 고정)')t.name='기획·운영'});
   if(!S.settings.mig1){S.tasks=S.tasks.map(t=>({...t,...MIG1(t)}));S.settings.mig1=true}
+  if(!S.settings.mig3){if(!S.tasks.some(t=>t.name==='콘텐츠 기획'))S.tasks.push({...PLAN_TASK});S.tasks.sort((a,b)=>a.order-b.order);S.settings.mig3=true}
   if(!S.settings.mig2){S.tasks=S.tasks.filter(t=>!MIG2_DEL.includes(t.name)).map(t=>MIG2_REN[t.name]?{...t,name:MIG2_REN[t.name]}:t);S.settings.mig2=true}
   S.decisions.forEach(d=>{['from','to'].forEach(k=>{d[k]=nameOf(d[k])});if(d.confirmedBy)d.confirmedBy=d.confirmedBy.replace(/^(형님|현우|호정) 확인$/,m=>({'형님 확인':'푸만 확인','현우 확인':'푸만 확인','호정 확인':'미디어볼 확인'})[m])});(S.docs||[]).forEach(k=>{if(k.from)k.from=nameOf(k.from)});
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};draw()};
@@ -327,6 +329,7 @@ async function fireApi(){
       F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('tasks'),q=>{S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
         if(me.role==='admin'){S.tasks.filter(t=>t.name==='기획·운영 (미디어볼 월 고정)').forEach(t=>F.updateDoc(F.doc(db,'tasks',t.id),{name:'기획·운영'}));
+          if(S.tasks.length&&settingsLoaded&&!S.settings.mig3){if(!S.tasks.some(t=>t.name==='콘텐츠 기획')){const{id,...r}=PLAN_TASK;F.setDoc(F.doc(db,'tasks',id),r)}F.setDoc(F.doc(db,'settings','main'),{mig3:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig2){S.tasks.forEach(t=>{if(MIG2_DEL.includes(t.name))F.deleteDoc(F.doc(db,'tasks',t.id));else if(MIG2_REN[t.name])F.updateDoc(F.doc(db,'tasks',t.id),{name:MIG2_REN[t.name]})});F.setDoc(F.doc(db,'settings','main'),{mig2:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig1){S.tasks.forEach(t=>{const m=MIG1(t);F.updateDoc(F.doc(db,'tasks',t.id),{name:m.name,cells:m.cells,note:m.note})});F.setDoc(F.doc(db,'settings','main'),{mig1:true},{merge:true})}}
         draw()});
@@ -342,7 +345,7 @@ async function fireApi(){
         updateContent:(id,p)=>F.updateDoc(F.doc(db,'contents',id),p),
         deleteContent:id=>F.deleteDoc(F.doc(db,'contents',id)),
         setCell:(tid,w,v)=>F.updateDoc(F.doc(db,'tasks',tid),{['cells.'+w]:v===null?F.deleteField():v}),
-        seed:async()=>{const b=F.writeBatch(db);SEED_TASKS.forEach(t=>{const{id,...r}=t;b.set(F.doc(db,'tasks',id),r)});SEED_DEC.forEach(d=>{const{id,...r}=normD(d);b.set(F.doc(db,'decisions',id),r)});SEED_DOCS.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'docs',id),{...r,from:ADMIN0()})});SEED_CON.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'contents',id),r)});b.set(F.doc(db,'settings','main'),{...SEED_SET,mig1:true,mig2:true},{merge:true});await b.commit()}
+        seed:async()=>{const b=F.writeBatch(db);SEED_TASKS.forEach(t=>{const{id,...r}=t;b.set(F.doc(db,'tasks',id),r)});SEED_DEC.forEach(d=>{const{id,...r}=normD(d);b.set(F.doc(db,'decisions',id),r)});SEED_DOCS.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'docs',id),{...r,from:ADMIN0()})});SEED_CON.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'contents',id),r)});b.set(F.doc(db,'settings','main'),{...SEED_SET,mig1:true,mig2:true,mig3:true},{merge:true});await b.commit()}
       });
     });
   });
