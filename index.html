@@ -192,6 +192,12 @@ input[type=date]{cursor:pointer}
 .log .when{color:var(--mute);font-size:12.5px}.log .what{color:var(--mute)}.log .obj{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:900px){.row3c{grid-template-columns:minmax(0,1fr)}.log li{grid-template-columns:60px minmax(0,1fr)}.log .what,.log .obj{grid-column:2}}
 .more2{display:block;width:100%;margin-top:6px;padding:9px;border:1px dashed var(--line);border-radius:8px;background:none;color:var(--mute);font:inherit;font-size:13px;text-align:center;text-decoration:none;cursor:pointer}.more2:hover{color:inherit;border-color:#cfcfcf}
+
+.gbar{display:flex;align-items:center;gap:10px;margin:-4px 0 10px}.gbar .sub{font-size:12.5px}
+.gbar .seg{margin-left:0}.seg.gz button{min-width:48px;padding:5px 14px;min-height:34px;font-size:13px}
+table.g.gm{min-width:0;width:100%}.g.gm .tot,.g.gm thead th.tot{position:static;box-shadow:none}.g.gm td.mc{min-width:58px}.g.gm td.mc{min-width:58px;font-size:12px;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums}.g.gm td.mc:hover{box-shadow:inset 0 0 0 2px var(--rose)}
+.g.gm th.mh{cursor:pointer;font-size:12px;height:30px}.g.gm th.yr{font-size:11px;font-weight:500;height:24px;opacity:.85}.g.gm tfoot td{font-size:12px}
+@media(max-width:700px){.g .nm{min-width:112px;max-width:112px;font-size:12px;padding:0 8px}.g td.tot{min-width:56px;font-size:11.5px}table.g.gm{table-layout:fixed}.g.gm .nm{width:96px;min-width:0;max-width:none}.g.gm .tot,.g.gm th.tot{display:none}.g.gm td.mc{min-width:0;font-size:0}.g.gm th.mh{font-size:10.5px;padding:0}.g.gm th.mh .w{display:none}.g.gm th.yr{font-size:10px}.g.gm .yl{display:none}.g.gm tfoot td{font-size:0}.g.gm tfoot td.nm{font-size:11.5px}.gbar{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -203,8 +209,9 @@ input[type=date]{cursor:pointer}
 <script type="module">
 {
 // ---------- 기본 설정 ----------
-const START=new Date(2026,10,30); const NW=31;
-const MONTHS=[['12월',0,4],['1월',5,8],['2월',9,12],['3월',13,17],['4월',18,21],['5월',22,26],['6월',27,30]];
+const START=new Date(2026,10,30); const NW=52;
+const MONTHS=(()=>{const r=[];for(let i=0;i<NW;i++){const d=new Date(START.getTime()+(i*7+3)*864e5),k=d.getFullYear()*12+d.getMonth(),l=r[r.length-1];if(l&&l.k===k)l[2]=i;else{const m=[(d.getMonth()+1)+'월',i,i];m.k=k;m.y=d.getFullYear();r.push(m)}}return r})();
+const SPAN=MONTHS[0][0]+'~'+MONTHS[MONTHS.length-1][0];
 const GC={'핵심':'var(--c-core)','기반':'var(--c-base)','콘텐츠':'var(--c-cont)','PR·광고':'var(--c-pr)','행사·체험':'var(--c-evt)'};
 const GT={'핵심':'#fff','기반':'#fff','콘텐츠':'#fff','PR·광고':'#2E2925','행사·체험':'#fff'};
 const GROUPS=['핵심','기반','콘텐츠','PR·광고','행사·체험'];
@@ -428,7 +435,7 @@ function dash(){
    <div class="card"><h3>오픈까지</h3>${dd(od,st.openDate,'5~6월 중, 달력에서 정해주세요')}${dateIn('openDate',st.openDate)}</div>
    <div class="card"><h3>회원권 판매 시작까지</h3>${dd(sd,st.saleDate,'2027년 2월 중')}${dateIn('saleDate',st.saleDate)}</div>
    <div class="card bsplit"><div><h3>${curM[0]} 예산</h3><div class="mid">${monthSum(curM)?fmt(monthSum(curM))+'<small> 만원</small>':'–'}</div></div>
-    <div><h3>전체 기획 예산 (12월~6월)</h3><div class="mid">${tot?fmt(tot)+'<small> 만원</small>':'입력 전'}</div><div class="sub">${tot?'예비비 10% 포함 '+fmt(tot*1.1)+'만원':'기획·예산 탭에서 주별 금액을 넣어요'}</div><div class="stack">${stack}</div></div></div>
+    <div><h3>전체 기획 예산 (${SPAN})</h3><div class="mid">${tot?fmt(tot)+'<small> 만원</small>':'입력 전'}</div><div class="sub">${tot?'예비비 10% 포함 '+fmt(tot*1.1)+'만원':'기획·예산 탭에서 주별 금액을 넣어요'}</div><div class="stack">${stack}</div></div></div>
    <div class="card"><h3>내가 확인할 것</h3><div class="big">${mine.length}<span style="font-size:15px;font-weight:600"> 건</span></div><div class="sub">답 기다리는 것 ${sent.length}건 · 확정 ${done.length}건</div></div>
   </section>
   <section class="row2">
@@ -481,6 +488,7 @@ const canEditDec=d=>isAdmin()||d.from===me.id;
 function armDelete(btn,fn){if(btn.dataset.arm){fn();return}btn.dataset.arm=1;btn.textContent='한 번 더 누르면 삭제';btn.style.color='var(--rose)';setTimeout(()=>{if(btn.isConnected){delete btn.dataset.arm;btn.textContent='삭제';btn.style.color=''}},3000)}
 
 // ---------- 기획·예산 ----------
+let gz=(()=>{try{return localStorage.getItem('puman-gz')||'w'}catch(e){return'w'}})(),gzJump=null;
 function plan(){
   const st=S.settings,tot=total(),w0=curWeek();
   const msSet=new Set(MONTHS.map(m=>m[1]));
@@ -515,7 +523,8 @@ function plan(){
      <div><label for="scenAgg">공격안</label>${scenIn('scenAgg',st.scenAgg)}</div></div></div>
   </section>
   <div class="card"><div class="head"><h2>홍보 일정과 주별 금액</h2><p class="sub">${isAdmin()?'칸을 눌러 일정을 넣고 금액(만원)을 적어요. 0이면 일정만 표시돼요.':'금액 단위는 만원이에요.'}</p></div>
-   <div class="gwrap"><table class="g"><thead><tr><th class="nm" rowspan="2">업무</th>${head1}<th class="tot" rowspan="2">합계</th></tr><tr>${head2}</tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>
+   <div class="gbar"><div class="seg gz" role="tablist" aria-label="보기 단위"><button data-gz="w" class="${gz==='w'?'on':''}">주</button><button data-gz="m" class="${gz==='m'?'on':''}">월</button></div><span class="sub">${gz==='m'?'월 칸을 누르면 그 달의 주 보기로 이동해요.':'칸이 많으면 옆으로 넘겨 보세요.'}</span></div>
+   ${gz==='m'?mview():`<div class="gwrap"><table class="g"><thead><tr><th class="nm" rowspan="2">업무</th>${head1}<th class="tot" rowspan="2">합계</th></tr><tr>${head2}</tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>`}
    <div class="legend">${GROUPS.map(g=>`<span><i class="dot" style="background:${GC[g]}"></i>${g}</span>`).join('')}<span>· 분홍 세로줄: 이번 주</span></div>
   </div>
   <section class="row3">
@@ -527,9 +536,23 @@ function plan(){
    <tbody>${costTasks().map(t=>`<tr><td>${esc(t.g)}</td><td>${esc(t.name)}</td><td style="color:var(--mute);font-size:13px">${esc(t.note)}</td><td class="n">${rowSum(t)?fmt(rowSum(t)):'–'}</td><td class="n">${tot?Math.round(rowSum(t)/tot*100)+'%':'–'}</td></tr>`).join('')}</tbody>
    <tfoot><tr><td></td><td>합계</td><td></td><td class="n">${tot?fmt(tot):'–'}</td><td class="n">${tot?'100%':''}</td></tr></tfoot></table></div></div>`);
   ['scenMin','scenAgg'].forEach(k=>{const e=app.querySelector('#'+k);if(e)e.onchange=()=>api.setSettings({[k]:e.value.replace(/[^\d.]/g,'')})});
+  app.querySelectorAll('[data-gz]').forEach(e=>e.onclick=()=>{gz=e.dataset.gz;try{localStorage.setItem('puman-gz',gz)}catch(x){};draw()});
+  app.querySelectorAll('[data-mj]').forEach(e=>e.onclick=()=>{gzJump=+e.dataset.mj;gz='w';try{localStorage.setItem('puman-gz',gz)}catch(x){};draw()});
   const ng=app.querySelector('.gwrap');
-  if(ng){if(keepX!==null){ng.scrollLeft=keepX;scrollTo(0,keepY)}else{const c=ng.querySelector('td.now');if(c)ng.scrollLeft=Math.max(0,c.offsetLeft-ng.querySelector('td.nm').offsetWidth-64)}}
+  if(ng&&gz==='w'&&gzJump!==null){const c=ng.querySelector('td.c[data-w="'+MONTHS[gzJump][1]+'"]');gzJump=null;if(c){ng.scrollLeft=Math.max(0,c.offsetLeft-ng.querySelector('td.nm').offsetWidth-8)}}
+  else if(ng&&gz==='w'){if(keepX!==null&&og&&og.querySelector('td.c')){ng.scrollLeft=keepX;scrollTo(0,keepY)}else{const c=ng.querySelector('td.now');if(c)ng.scrollLeft=Math.max(0,c.offsetLeft-ng.querySelector('td.nm').offsetWidth-64)}}
   if(isAdmin())app.querySelectorAll('td.c.ed').forEach(td=>td.onclick=()=>cellEdit(td));
+}
+function mview(){
+  const yrs=[];MONTHS.forEach(m=>{const l=yrs[yrs.length-1];if(l&&l.y===m.y)l.n++;else yrs.push({y:m.y,n:1})});
+  const mSum=(t,m)=>{let s=0,on=false;for(let i=m[1];i<=m[2];i++){const v=(t.cells||{})[i];if(v!==undefined){on=true;s+=+v||0}}return{on,s}};
+  const cm=MONTHS.findIndex(m=>curWeek()>=m[1]&&curWeek()<=m[2]);
+  let rows='';
+  GROUPS.forEach(g=>{const ts=S.tasks.filter(t=>t.g===g);if(!ts.length)return;
+    rows+=`<tr class="grp"><td class="nm">${g}</td><td colspan="${MONTHS.length}"></td><td class="tot">${groupSum(g)?fmt(groupSum(g)):''}</td></tr>`;
+    ts.forEach(t=>{rows+=`<tr><td class="nm" title="${esc(t.note||t.name)}">${esc(t.name)}</td>`+MONTHS.map((m,j)=>{const x=mSum(t,m);return `<td class="mc${j===cm&&!x.on?' now':''}" data-mj="${j}" style="${x.on?'background:'+GC[t.g]+';color:'+GT[t.g]:''}">${x.on&&t.cost&&x.s>0?fmt(x.s):''}</td>`}).join('')+`<td class="tot">${t.cost?(rowSum(t)?fmt(rowSum(t)):'–'):''}</td></tr>`})});
+  const tot=total();
+  return `<div class="gwrap"><table class="g gm"><thead><tr><th class="nm" rowspan="2">업무</th>${yrs.map(y=>`<th colspan="${y.n}" class="yr"><span class="yl">20</span>${String(y.y).slice(2)}</th>`).join('')}<th class="tot" rowspan="2">합계</th></tr><tr>${MONTHS.map((m,j)=>`<th data-mj="${j}" class="mh">${parseInt(m[0])}<span class="w">월</span></th>`).join('')}</tr></thead><tbody>${rows}</tbody><tfoot><tr><td class="nm">월별 합계 (만원)</td>${MONTHS.map(m=>`<td>${monthSum(m)?fmt(monthSum(m)):'–'}</td>`).join('')}<td class="tot">${tot?fmt(tot):'–'}</td></tr></tfoot></table></div>`;
 }
 function cellEdit(td){
   const t=S.tasks.find(x=>x.id===td.dataset.t),w=+td.dataset.w,v=(t.cells||{})[w];
