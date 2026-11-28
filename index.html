@@ -307,24 +307,8 @@ const SEED_TASKS=[
  T('행사·체험','일반 예약 프로모션','yel',R('AD','AG'),true)].map((t,i)=>({...t,id:'t'+String(i).padStart(2,'0'),order:i}));
 const PLAN_TASK={...T('콘텐츠','콘텐츠 기획','blue',[],true),id:'t24',order:7.5};SEED_TASKS.push(PLAN_TASK);SEED_TASKS.sort((a,b)=>a.order-b.order);
 const D=(cat,title,detail,status='pending',by='')=>({cat,title,detail,status,confirmedBy:by,createdAt:Date.now(),from:'미디어볼',to:'푸만'});
-const SEED_DEC=[
- D('회원권','등급별 가격과 보증금','Founders 300 · Standard 800 · Premium 300 구좌별 금액'),
- D('회원권','회원 혜택','연간 숙박 일수, 성수기 예약 규칙'),
- D('회원권','1,400구좌 판매 목표','오픈 전에 전부 판매하는 것이 목표인지'),
- D('회원권','5년 보증금형 광고 문구','"원금 반환" 같은 표현을 쓰기 전 법률 검토 여부'),
- D('범위','분양 영업 조직','분양 영업팀이나 분양 대행사가 따로 있는지'),
- D('범위','미디어볼 업무 범위','기획만 / 광고 운영까지 / 상담·설명회까지'),
- D('범위','계약·정산 방식','매체비 결제 주체(법인 카드 직접 결제 등)'),
- D('예산','전체 예산 규모','최소안·적정안·공격안 기준을 잡을 금액'),
- D('예산','공항광고 게재 기간','판매 기간(2~5월) 전체인지, 오픈 직전 집중인지'),
- D('일정','정확한 오픈일','5~6월 중 날짜'),
- D('일정','리뉴얼 공사 일정','오픈용 광고 촬영 시기를 맞추기 위해'),
- D('일정','1층 B안 확정 여부','객실 한 줄을 F&B·편집숍으로 바꾸는 안과 최종 객실 수'),
- D('기타','로고·브랜드 가이드','이미 있는지, 새로 만들어야 하는지'),
- D('일정','회원권 판매 2027년 2월 시작','카톡 11/25','confirmed','카톡 확인'),
- D('일정','오픈 2027년 5~6월','카톡 11/23, 11/25','confirmed','카톡 확인'),
- D('범위','회원권 분양·홍보 기획·예산·스케줄 미디어볼 일임','카톡 11/25','confirmed','카톡 확인'),
- D('예산','공항 옥외광고 비용 조사 포함','김포공항 무빙워크 우선, 국내 주요 공항','confirmed','카톡 확인')].map((d,i)=>({...d,id:'d'+String(i).padStart(2,'0'),createdAt:i}));
+const SEED_DEC=[{id:'n01',cat:'회원권',title:'판매 목표',detail:'1,400구좌를 오픈 전까지 모두 판매하는 것이 목표인지, 단계별 목표 수치',status:'pending',confirmedBy:'',pri:0,createdAt:Date.now(),from:'미디어볼',to:'푸만'},{id:'n02',cat:'기타',title:'로고·BI 정립',detail:'로고·브랜드 컬러·서체 등 기존 가이드가 있는지, 새로 정립해야 하는지',status:'pending',confirmedBy:'',pri:0,createdAt:Date.now(),from:'미디어볼',to:'푸만'}];
+const OLD_DEC_IDS=Array.from({length:17},(_,i)=>'d'+String(i).padStart(2,'0'));
 const SEED_TIERS=[{name:'Founders',qty:300,price:'',sold:0,benefit:''},{name:'Standard',qty:800,price:'',sold:0,benefit:''},{name:'Premium',qty:300,price:'',sold:0,benefit:''}];
 const MIG1=t=>{const ren={'숏폼 제작':'인스타 게시글·릴스 제작','숏폼·SNS 업로드':'인스타 게시글·릴스 업로드'};const clear=t.g==='콘텐츠'||t.g==='PR·광고';return {name:ren[t.name]||t.name,cells:clear?{}:t.cells,note:clear?'':(t.note||'')}};
 const MIG4_DEL=['광고 기획','광고 촬영','광고 편집·입고'];
@@ -350,7 +334,7 @@ const SEED_CON=[
 
 // ---------- 저장소: Firebase 또는 미리보기(이 브라우저) ----------
 const CFG=window.PUMAN_CONFIG; let S={settings:{...SEED_SET},decisions:[],tasks:[],contents:[],docs:[]};
-let settingsLoaded=false,tasksLoaded=false,rawSet={},loadErr='';
+let settingsLoaded=false,tasksLoaded=false,decLoaded=false,rawSet={},loadErr='';
 let me={name:'미디어볼',email:'',role:'admin',id:'미디어볼'}; let api; let LOCAL=true;
 // 결정·자료는 개인이 아니라 소속(미디어볼 / 푸만) 단위로 주고받는다
 const ORGS=()=>LOCAL?['미디어볼','푸만']:(CFG.orgs||['미디어볼','푸만']);
@@ -370,6 +354,7 @@ function localApi(){
   if(!S.docs)S.docs=SEED_DOCS;
   S.tasks.forEach(t=>{if(t.name==='기획·운영 (미디어볼 월 고정)')t.name='기획·운영'});
   if(!S.settings.mig1){S.tasks=S.tasks.map(t=>({...t,...MIG1(t)}));S.settings.mig1=true}
+  if(!S.settings.mig5){S.decisions=S.decisions.filter(d=>!OLD_DEC_IDS.includes(d.id));SEED_DEC.forEach(d=>{if(!S.decisions.some(x=>x.id===d.id))S.decisions.push({...d,createdAt:Date.now()})});S.settings.mig5=true}
   if(!S.settings.mig4){S.tasks=S.tasks.filter(t=>!MIG4_DEL.includes(t.name));S.settings.mig4=true}
   if(!S.settings.mig3){if(!S.tasks.some(t=>t.name==='콘텐츠 기획'))S.tasks.push({...PLAN_TASK});S.tasks.sort((a,b)=>a.order-b.order);S.settings.mig3=true}
   if(!S.settings.mig2){S.tasks=S.tasks.filter(t=>!MIG2_DEL.includes(t.name)).map(t=>MIG2_REN[t.name]?{...t,name:MIG2_REN[t.name]}:t);S.settings.mig2=true}
@@ -393,7 +378,7 @@ function localApi(){
 async function fireApi(){
   const V='10.12.2',B=`https://www.gstatic.com/firebasejs/${V}/`;
   const [{initializeApp},A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
-  const app=initializeApp(CFG.firebase),auth=A.getAuth(app),db=F.getFirestore(app);
+  const app=initializeApp(CFG.firebase),auth=A.getAuth(app),db=(()=>{try{return F.initializeFirestore(app,{localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()})})}catch(e){return F.getFirestore(app)}})();
   const admins=(CFG.admins||[]).map(s=>s.toLowerCase()),members=(CFG.members||[]).map(s=>s.toLowerCase());
   return new Promise(res=>{
     A.onAuthStateChanged(auth,async u=>{
@@ -403,8 +388,11 @@ async function fireApi(){
       me={name:orgOf(em)||em,email:em,id:orgOf(em)||em,role:admins.includes(em)?'admin':'member',logout:()=>A.signOut(auth)};
       const c=n=>F.collection(db,n);
       const onErr=e=>{loadErr=e&&e.code==='permission-denied'?'권한 오류: 이 계정으로는 데이터를 읽을 수 없어요. 보안 규칙의 명단을 확인해 주세요.':'데이터를 불러오지 못했어요. ('+((e&&e.code)||'오류')+')';draw()};
-      F.onSnapshot(F.doc(db,'settings','main'),s=>{rawSet=s.data()||{};S.settings={...SEED_SET,...rawSet};settingsLoaded=true;draw()},onErr);
-      F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));draw()},onErr);
+      const runMig5=()=>{if(!(settingsLoaded&&decLoaded&&!S.settings.mig5&&isAdmin()&&!window.__mig5))return;window.__mig5=true;const bt=F.writeBatch(db);S.decisions.forEach(d=>{if(OLD_DEC_IDS.includes(d.id))bt.delete(F.doc(db,'decisions',d.id))});const toId=me.id==='푸만'?'미디어볼':'푸만';SEED_DEC.forEach(d=>{if(!S.decisions.some(x=>x.id===d.id)){const{id,...r}=d;bt.set(F.doc(db,'decisions',id),{...r,createdAt:Date.now(),from:me.id,to:toId})}});bt.set(F.doc(db,'settings','main'),{mig5:true},{merge:true});bt.commit().catch(e=>{window.__mig5=false;console.error(e)})};
+      F.onSnapshot(F.doc(db,'settings','main'),s=>{rawSet=s.data()||{};S.settings={...SEED_SET,...rawSet};settingsLoaded=true;runMig5();draw()},onErr);
+      F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));
+        decLoaded=true;runMig5();
+        draw()},onErr);
       F.onSnapshot(c('docs'),q=>{S.docs=q.docs.map(d=>({id:d.id,...d.data()}));draw()},onErr);
       F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()},onErr);
       F.onSnapshot(c('tasks'),q=>{tasksLoaded=true;S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
