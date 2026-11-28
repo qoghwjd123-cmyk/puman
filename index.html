@@ -350,7 +350,7 @@ const SEED_CON=[
 
 // ---------- 저장소: Firebase 또는 미리보기(이 브라우저) ----------
 const CFG=window.PUMAN_CONFIG; let S={settings:{...SEED_SET},decisions:[],tasks:[],contents:[],docs:[]};
-let settingsLoaded=false,tasksLoaded=false;
+let settingsLoaded=false,tasksLoaded=false,rawSet={},loadErr='';
 let me={name:'미디어볼',email:'',role:'admin',id:'미디어볼'}; let api; let LOCAL=true;
 // 결정·자료는 개인이 아니라 소속(미디어볼 / 푸만) 단위로 주고받는다
 const ORGS=()=>LOCAL?['미디어볼','푸만']:(CFG.orgs||['미디어볼','푸만']);
@@ -402,17 +402,18 @@ async function fireApi(){
       if(!admins.includes(em)&&!members.includes(em)){showDenied(em,()=>A.signOut(auth));return}
       me={name:orgOf(em)||em,email:em,id:orgOf(em)||em,role:admins.includes(em)?'admin':'member',logout:()=>A.signOut(auth)};
       const c=n=>F.collection(db,n);
-      F.onSnapshot(F.doc(db,'settings','main'),s=>{S.settings={...SEED_SET,...(s.data()||{})};settingsLoaded=true;draw()});
-      F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
-      F.onSnapshot(c('docs'),q=>{S.docs=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
-      F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
+      const onErr=e=>{loadErr=e&&e.code==='permission-denied'?'권한 오류: 이 계정으로는 데이터를 읽을 수 없어요. 보안 규칙의 명단을 확인해 주세요.':'데이터를 불러오지 못했어요. ('+((e&&e.code)||'오류')+')';draw()};
+      F.onSnapshot(F.doc(db,'settings','main'),s=>{rawSet=s.data()||{};S.settings={...SEED_SET,...rawSet};settingsLoaded=true;draw()},onErr);
+      F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));draw()},onErr);
+      F.onSnapshot(c('docs'),q=>{S.docs=q.docs.map(d=>({id:d.id,...d.data()}));draw()},onErr);
+      F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()},onErr);
       F.onSnapshot(c('tasks'),q=>{tasksLoaded=true;S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
         if(me.role==='admin'){S.tasks.filter(t=>t.name==='기획·운영 (미디어볼 월 고정)').forEach(t=>F.updateDoc(F.doc(db,'tasks',t.id),{name:'기획·운영'}));
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig4&&isAdmin()){S.tasks.forEach(t=>{if(MIG4_DEL.includes(t.name))F.deleteDoc(F.doc(db,'tasks',t.id))});S.settings.mig4=true;F.setDoc(F.doc(db,'settings','main'),{mig4:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig3){if(!S.tasks.some(t=>t.name==='콘텐츠 기획')){const{id,...r}=PLAN_TASK;F.setDoc(F.doc(db,'tasks',id),r)}F.setDoc(F.doc(db,'settings','main'),{mig3:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig2){S.tasks.forEach(t=>{if(MIG2_DEL.includes(t.name))F.deleteDoc(F.doc(db,'tasks',t.id));else if(MIG2_REN[t.name])F.updateDoc(F.doc(db,'tasks',t.id),{name:MIG2_REN[t.name]})});F.setDoc(F.doc(db,'settings','main'),{mig2:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig1){S.tasks.forEach(t=>{const m=MIG1(t);F.updateDoc(F.doc(db,'tasks',t.id),{name:m.name,cells:m.cells,note:m.note})});F.setDoc(F.doc(db,'settings','main'),{mig1:true},{merge:true})}}
-        draw()});
+        draw()},onErr);
       res({
         setSettings:p=>F.setDoc(F.doc(db,'settings','main'),p,{merge:true}),
         addDecision:d=>F.addDoc(c('decisions'),{...d,createdAt:Date.now()}),
@@ -425,7 +426,7 @@ async function fireApi(){
         updateContent:(id,p)=>F.updateDoc(F.doc(db,'contents',id),p),
         deleteContent:id=>F.deleteDoc(F.doc(db,'contents',id)),
         setCell:(tid,w,v)=>F.updateDoc(F.doc(db,'tasks',tid),{['cells.'+w]:v===null?F.deleteField():v}),
-        seed:async()=>{const b=F.writeBatch(db);SEED_TASKS.forEach(t=>{const{id,...r}=t;b.set(F.doc(db,'tasks',id),r)});SEED_DEC.forEach(d=>{const{id,...r}=normD(d);b.set(F.doc(db,'decisions',id),r)});SEED_DOCS.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'docs',id),{...r,from:ADMIN0()})});SEED_CON.forEach(d=>{const{id,...r}=d;b.set(F.doc(db,'contents',id),r)});b.set(F.doc(db,'settings','main'),{...SEED_SET,mig1:true,mig2:true,mig3:true},{merge:true});await b.commit()}
+        seed:async()=>{}
       });
     });
   });
@@ -450,11 +451,11 @@ function shell(tab,body){
   <nav><a href="#dashboard" class="${tab==='dashboard'?'on':''}">대시보드</a><a href="#plan" class="${tab==='plan'?'on':''}">기획·예산</a><a href="#content" class="${tab==='content'?'on':''}">홍보·콘텐츠</a><a href="#member" class="${tab==='member'?'on':''}">회원권</a><a href="#docs" class="${tab==='docs'?'on':''}">자료</a></nav>
   <div class="who">${local?`<label for="role">보는 사람</label><select id="role"><option value="admin">보울 (관리)</option><option value="member">푸만 (확인)</option></select><button id="reset" title="미리보기 데이터를 처음 상태로">초기화</button>`:`<span>${esc(who(me.id))} · ${isAdmin()?'관리':'확인'}</span><button id="out">로그아웃</button>`}</div></header>
   ${local?`<div class="mode">미리보기 모드예요. 입력한 내용은 이 브라우저에만 저장됩니다. Firebase를 연결하면 함께 쓰는 사람 모두가 같은 내용을 보고 고칠 수 있어요.</div>`:''}
-  ${!local&&!(settingsLoaded&&tasksLoaded)?`<div class="loading">불러오는 중…</div>`:''}${!local&&settingsLoaded&&tasksLoaded&&!S.tasks.length&&isAdmin()?`<div class="mode">아직 데이터가 없어요. <button class="btn" id="seed">기본 일정·결정 목록 불러오기</button></div>`:''}${!local&&!(settingsLoaded&&tasksLoaded)?`<div hidden>${body}</div>`:body}`;
+  ${!local&&loadErr?`<div class="mode" style="border-color:#E7C6B0;color:#A2493A">${esc(loadErr)}</div>`:''}${!local&&!loadErr&&!(settingsLoaded&&tasksLoaded)?`<div class="loading">불러오는 중…</div>`:''}${!local&&!(settingsLoaded&&tasksLoaded)?`<div hidden>${body}</div>`:body}`;
   const r=app.querySelector('#role');if(r){r.value=me.role;r.onchange=()=>{me.role=r.value;me.id=me.role==='admin'?'미디어볼':'푸만';me.name=me.id;decBox='';draw()}}
   const rs=app.querySelector('#reset');if(rs)rs.onclick=()=>api.reset();
   const o=app.querySelector('#out');if(o)o.onclick=()=>me.logout();
-  const sd=app.querySelector('#seed');if(sd)sd.onclick=()=>api.seed();
+  
 }
 
 // ---------- 대시보드 ----------
