@@ -252,6 +252,7 @@ input,select,textarea{border-radius:2px!important;background:#FAFAFB!important;b
 .cnote{display:block;margin-top:3px;font-size:12.5px;font-weight:400;color:var(--mute);line-height:1.45;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #cnote{grid-column:1/-1;resize:vertical;min-height:40px;font-family:inherit;padding:9px 10px;font-size:14px}
 .enote{display:block;width:100%;margin-top:6px;resize:vertical;font-family:inherit;font-size:14px;padding:6px 8px;box-sizing:border-box}
+.loading{padding:80px 0;text-align:center;color:var(--mute);font-size:14px;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -349,7 +350,7 @@ const SEED_CON=[
 
 // ---------- 저장소: Firebase 또는 미리보기(이 브라우저) ----------
 const CFG=window.PUMAN_CONFIG; let S={settings:{...SEED_SET},decisions:[],tasks:[],contents:[],docs:[]};
-let settingsLoaded=false;
+let settingsLoaded=false,tasksLoaded=false;
 let me={name:'미디어볼',email:'',role:'admin',id:'미디어볼'}; let api; let LOCAL=true;
 // 결정·자료는 개인이 아니라 소속(미디어볼 / 푸만) 단위로 주고받는다
 const ORGS=()=>LOCAL?['미디어볼','푸만']:(CFG.orgs||['미디어볼','푸만']);
@@ -405,7 +406,7 @@ async function fireApi(){
       F.onSnapshot(c('decisions'),q=>{S.decisions=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('docs'),q=>{S.docs=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
-      F.onSnapshot(c('tasks'),q=>{S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
+      F.onSnapshot(c('tasks'),q=>{tasksLoaded=true;S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
         if(me.role==='admin'){S.tasks.filter(t=>t.name==='기획·운영 (미디어볼 월 고정)').forEach(t=>F.updateDoc(F.doc(db,'tasks',t.id),{name:'기획·운영'}));
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig4&&isAdmin()){S.tasks.forEach(t=>{if(MIG4_DEL.includes(t.name))F.deleteDoc(F.doc(db,'tasks',t.id))});S.settings.mig4=true;F.setDoc(F.doc(db,'settings','main'),{mig4:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig3){if(!S.tasks.some(t=>t.name==='콘텐츠 기획')){const{id,...r}=PLAN_TASK;F.setDoc(F.doc(db,'tasks',id),r)}F.setDoc(F.doc(db,'settings','main'),{mig3:true},{merge:true})}
@@ -449,7 +450,7 @@ function shell(tab,body){
   <nav><a href="#dashboard" class="${tab==='dashboard'?'on':''}">대시보드</a><a href="#plan" class="${tab==='plan'?'on':''}">기획·예산</a><a href="#content" class="${tab==='content'?'on':''}">홍보·콘텐츠</a><a href="#member" class="${tab==='member'?'on':''}">회원권</a><a href="#docs" class="${tab==='docs'?'on':''}">자료</a></nav>
   <div class="who">${local?`<label for="role">보는 사람</label><select id="role"><option value="admin">보울 (관리)</option><option value="member">푸만 (확인)</option></select><button id="reset" title="미리보기 데이터를 처음 상태로">초기화</button>`:`<span>${esc(who(me.id))} · ${isAdmin()?'관리':'확인'}</span><button id="out">로그아웃</button>`}</div></header>
   ${local?`<div class="mode">미리보기 모드예요. 입력한 내용은 이 브라우저에만 저장됩니다. Firebase를 연결하면 함께 쓰는 사람 모두가 같은 내용을 보고 고칠 수 있어요.</div>`:''}
-  ${!local&&!S.tasks.length&&isAdmin()?`<div class="mode">아직 데이터가 없어요. <button class="btn" id="seed">기본 일정·결정 목록 불러오기</button></div>`:''}${body}`;
+  ${!local&&!(settingsLoaded&&tasksLoaded)?`<div class="loading">불러오는 중…</div>`:''}${!local&&settingsLoaded&&tasksLoaded&&!S.tasks.length&&isAdmin()?`<div class="mode">아직 데이터가 없어요. <button class="btn" id="seed">기본 일정·결정 목록 불러오기</button></div>`:''}${!local&&!(settingsLoaded&&tasksLoaded)?`<div hidden>${body}</div>`:body}`;
   const r=app.querySelector('#role');if(r){r.value=me.role;r.onchange=()=>{me.role=r.value;me.id=me.role==='admin'?'미디어볼':'푸만';me.name=me.id;decBox='';draw()}}
   const rs=app.querySelector('#reset');if(rs)rs.onclick=()=>api.reset();
   const o=app.querySelector('#out');if(o)o.onclick=()=>me.logout();
