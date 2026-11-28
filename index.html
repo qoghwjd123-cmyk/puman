@@ -9,7 +9,7 @@
 <meta property="og:description" content="Opening Preparation">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap">
 <style>
 /* VOICE  차분한 실무 상황판. 함께 매주 여는 오픈 준비 본부 (흰 바탕 + 구분 색)
    IDEA   현장 사무실 벽의 공정표 + 결정 대장
@@ -69,7 +69,7 @@ details.done summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--o
 .stack{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--soft);margin-top:12px}
 :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
 /* 기획·예산 */
-.sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.6fr);gap:12px;margin-bottom:12px}
+.sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-width:720px;gap:12px;margin-bottom:12px}
 .scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .scen div{background:var(--soft);border-radius:8px;padding:8px 10px}
 .scen label{display:block;font-size:12px;color:var(--mute);white-space:nowrap}
@@ -172,7 +172,7 @@ div.editable{margin:-4px -6px;padding:4px 6px}
 .mid{font-size:22px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}.mid small{font-size:13px;font-weight:600}
 input[type=date]{cursor:pointer}
 .login{max-width:420px;margin:12vh auto;text-align:center}.login h1{font-size:28px;margin:0 0 8px}
-@media(max-width:900px){.docs{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dadd .file,.dadd #kt{grid-column:1/-1;max-width:none}.cadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cadd input:first-child,.cadd .chs{grid-column:1/-1}.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.row2,.row3{grid-template-columns:minmax(0,1fr)}.sum{grid-template-columns:repeat(3,minmax(0,1fr))}.sum .card:last-child{grid-column:1/-1}}
+@media(max-width:900px){.docs{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dadd .file,.dadd #kt{grid-column:1/-1;max-width:none}.cadd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cadd input:first-child,.cadd .chs{grid-column:1/-1}.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.row2,.row3{grid-template-columns:minmax(0,1fr)}.sum{grid-template-columns:repeat(2,minmax(0,1fr))}.sum .card:nth-child(n+3):last-child{grid-column:1/-1}}
 @media(max-width:600px){.dedit .r{grid-template-columns:minmax(0,1fr)}.who{margin-left:0;width:100%}nav{width:100%;overflow-x:auto}.big{font-size:24px}.sum{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.sum>.card:nth-child(n+3){grid-column:1/-1}.add{grid-template-columns:minmax(0,1fr)}.dadd{grid-template-columns:minmax(0,1fr)}.g .nm{min-width:130px;max-width:130px}}
 @media(prefers-reduced-motion:no-preference){.first .card,.first .gwrap{animation:in .35s ease both}@keyframes in{from{opacity:.4;transform:translateY(4px)}}}
 
@@ -217,6 +217,37 @@ label.pri{position:relative;cursor:pointer}label.pri select{position:absolute;in
 .calb input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0;margin:0;min-width:0}
 .calb input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
 .bcard{display:block;color:inherit;text-decoration:none}.bcard:hover{border-color:#cfcfcf}.bcard:hover .sub{color:var(--ink)}
+
+/* ===== Editorial · Jeju theme ===== */
+:root{--bg:#FFFFFF;--panel:#FFFFFF;--ink:#1F2328;--mute:#737880;--line:#E3E5E8;--soft:#F2F3F5;--rose:#C9692A;--sea:#2F5D62;--tan:#D9772B}
+body{background:var(--bg);letter-spacing:-0.005em}
+.brand b{font-size:30px;letter-spacing:.14em;font-weight:500}
+nav{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0;gap:22px}
+nav button,nav a{background:none!important;color:var(--mute)!important;border-radius:0!important;padding:10px 0!important;border-bottom:2px solid transparent!important;font-weight:500!important}
+nav .on{color:var(--ink)!important;border-bottom-color:var(--ink)!important;font-weight:700!important}
+.card{background:none;border:0;border-top:1px solid var(--ink);border-radius:0;padding:14px 0 6px;box-shadow:none}
+.grid4{gap:28px!important}.row2,.row3c{gap:36px!important}.row2,.row3c,.logc{margin-top:44px!important}
+.card h3{font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--mute);margin:0 0 10px}
+.big,.mid{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;letter-spacing:0;font-size:52px;line-height:1;font-variant-numeric:lining-nums tabular-nums;font-feature-settings:'lnum' 1}
+.big small,.big span{font-family:"Pretendard Variable",Pretendard,sans-serif}
+.grid4 .sub{margin-top:8px}
+body{counter-reset:sec}
+.head h2{font-size:19px;font-weight:700;counter-increment:sec}.head h2::before{content:counter(sec,decimal-leading-zero);font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:22px;color:var(--tan);margin-right:10px;vertical-align:-1px;font-feature-settings:'lnum' 1}
+.seg button{border-radius:2px;background:none;padding:6px 12px;min-height:34px;font-weight:500}
+.seg button.on{background:var(--ink);border-color:var(--ink)}
+.btn{border-radius:2px}
+input,select,textarea{border-radius:2px!important;background:#FAFAFB!important;border-color:var(--line)!important}
+.tag{background:none;border-radius:0;padding:0 8px 0 0;margin-right:8px;color:var(--sea);border-right:1px solid var(--line);font-weight:600}
+.dec li,.clist li,.log li,.week li{border-color:var(--line)!important}
+.more2{border-radius:2px;border-style:solid;border-color:var(--line)}
+.mbar i{background:var(--soft);border-radius:0}.mbar i b{background:var(--sea)}
+.stt{border-radius:2px}.kd{border-radius:2px}
+.old{border-radius:2px;background:none;border:1px solid #E7C6B0;color:var(--tan)}
+.dot{border-radius:0!important;width:8px!important;height:8px!important}
+.who button,.who a{border-radius:2px!important}
+.big .kt{font-family:"Pretendard Variable",Pretendard,sans-serif;font-size:26px;font-weight:700;vertical-align:4px}
+@media(max-width:700px){.sum{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;max-width:none}.sum .big{font-size:40px}.sum .mnav{flex-wrap:nowrap}.sum .arw button{width:26px;height:26px}.sum .arw b{min-width:30px}}
+
 </style>
 </head>
 <body>
@@ -323,6 +354,7 @@ const ORGS=()=>LOCAL?['미디어볼','푸만']:(CFG.orgs||['미디어볼','푸�
 const orgOf=em=>{const n=(CFG&&CFG.names)||{};const k=Object.keys(n).find(x=>x.toLowerCase()===em);return k?n[k]:''};
 const PEOPLE=ORGS;
 const nameOf=id=>({'호정':'미디어볼','현우':'푸만','형님':'푸만'})[id]||id||'';
+const DISP={'미디어볼':'보울','푸만':'푸만'};const who=id=>{const o=nameOf(id);return DISP[o]||o};
 const ADMIN0=()=>LOCAL?'미디어볼':(orgOf((CFG.admins||[''])[0].toLowerCase())||ORGS()[0]);
 const MEMBER0=()=>ORGS().find(o=>o!==ADMIN0())||'푸만';
 const normD=d=>d.to?{...d,from:nameOf(d.from),to:nameOf(d.to)}:{...d,from:ADMIN0(),to:MEMBER0()};
@@ -411,7 +443,7 @@ function shell(tab,body){
   const local=LOCAL;
   app.innerHTML=`<header><div class="brand"><b>PUMAN IN JEJU</b></div>
   <nav><a href="#dashboard" class="${tab==='dashboard'?'on':''}">대시보드</a><a href="#plan" class="${tab==='plan'?'on':''}">기획·예산</a><a href="#content" class="${tab==='content'?'on':''}">홍보·콘텐츠</a><a href="#member" class="${tab==='member'?'on':''}">회원권</a><a href="#docs" class="${tab==='docs'?'on':''}">자료</a></nav>
-  <div class="who">${local?`<label for="role">보는 사람</label><select id="role"><option value="admin">미디어볼 (관리)</option><option value="member">푸만 (확인)</option></select><button id="reset" title="미리보기 데이터를 처음 상태로">초기화</button>`:`<span>${esc(me.name)} · ${isAdmin()?'관리':'확인'}</span><button id="out">로그아웃</button>`}</div></header>
+  <div class="who">${local?`<label for="role">보는 사람</label><select id="role"><option value="admin">보울 (관리)</option><option value="member">푸만 (확인)</option></select><button id="reset" title="미리보기 데이터를 처음 상태로">초기화</button>`:`<span>${esc(who(me.id))} · ${isAdmin()?'관리':'확인'}</span><button id="out">로그아웃</button>`}</div></header>
   ${local?`<div class="mode">미리보기 모드예요. 입력한 내용은 이 브라우저에만 저장됩니다. Firebase를 연결하면 함께 쓰는 사람 모두가 같은 내용을 보고 고칠 수 있어요.</div>`:''}
   ${!local&&!S.tasks.length&&isAdmin()?`<div class="mode">아직 데이터가 없어요. <button class="btn" id="seed">기본 일정·결정 목록 불러오기</button></div>`:''}${body}`;
   const r=app.querySelector('#role');if(r){r.value=me.role;r.onchange=()=>{me.role=r.value;me.id=me.role==='admin'?'미디어볼':'푸만';me.name=me.id;decBox='';draw()}}
@@ -447,10 +479,10 @@ function dash(){
   const cw=(S.contents||[]).map(norm).filter(c=>c.due&&c.due>=ymd(wS)&&c.due<=ymd(wE)).sort((a,b)=>a.due.localeCompare(b.due));
   const newDocs=(S.docs||[]).filter(k=>okT(k.createdAt)&&Date.now()-k.createdAt<7*DAY).sort((a,b)=>b.createdAt-a.createdAt).slice(0,3);
   const ago=t=>{const m=Math.floor((Date.now()-t)/6e4);return m<60?Math.max(1,m)+'분 전':m<1440?Math.floor(m/60)+'시간 전':Math.floor(m/1440)+'일 전'};
-  const LOG=[...D.map(d=>({t:d.createdAt,who:nameOf(d.from),what:'결정 요청',obj:d.title})),...D.filter(d=>d.confirmedAt).map(d=>({t:d.confirmedAt,who:nameOf(d.to),what:'결정 확정',obj:d.title})),...(S.docs||[]).map(k=>({t:k.createdAt,who:nameOf(k.from||ADMIN0()),what:'자료 추가',obj:k.title})),...(S.contents||[]).map(c=>({t:c.createdAt,who:'미디어볼',what:'콘텐츠 등록',obj:c.title}))].filter(x=>okT(x.t)).sort((a,b)=>b.t-a.t).slice(0,5);
+  const LOG=[...D.map(d=>({t:d.createdAt,who:who(d.from),what:'결정 요청',obj:d.title})),...D.filter(d=>d.confirmedAt).map(d=>({t:d.confirmedAt,who:who(d.to),what:'결정 확정',obj:d.title})),...(S.docs||[]).map(k=>({t:k.createdAt,who:who(k.from||ADMIN0()),what:'자료 추가',obj:k.title})),...(S.contents||[]).map(c=>({t:c.createdAt,who:'미디어볼',what:'콘텐츠 등록',obj:c.title}))].filter(x=>okT(x.t)).sort((a,b)=>b.t-a.t).slice(0,5);
   const stale=d=>okT(d.createdAt)&&Date.now()-d.createdAt>7*DAY;
   const cal=(k,v)=>isAdmin()?`<label class="calb" title="날짜 바꾸기"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg><input type="date" id="${k}" value="${esc(v||'')}" aria-label="날짜 선택"></label>`:'';
-  const dd=(v,s,emptyTxt,k)=>v===null?`<div class="big">날짜 미정</div><div class="sub">${emptyTxt} ${cal(k,s)}</div>`:`<div class="big">${v>0?'D-'+v:v===0?'D-DAY':'D+'+(-v)}</div><div class="sub">${fdate(s)} ${cal(k,s)}</div>`;
+  const dd=(v,s,emptyTxt,k)=>v===null?`<div class="big"><span class="kt">날짜 미정</span></div><div class="sub">${emptyTxt} ${cal(k,s)}</div>`:`<div class="big">${v>0?'D-'+v:v===0?'D-DAY':'D+'+(-v)}</div><div class="sub">${fdate(s)} ${cal(k,s)}</div>`;
   const dateIn=()=>'';
   const gcol=GC;
   const stack=tot?GROUPS.slice(1).map(g=>`<i style="width:${groupSum(g)/tot*100}%;background:${gcol[g]}" title="${g}"></i>`).join(''):'';
@@ -463,10 +495,10 @@ function dash(){
   </section>
   <section class="row2">
    <div class="card"><div class="head"><h2>결정할 것</h2><p class="sub">받은 사람이 체크하면 확정됨으로 옮겨져요</p></div>
-    <form class="add" id="addf"><select id="ncat" aria-label="분류">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input id="nt" placeholder="물어볼 것 (예: 공항광고 게재 기간)" aria-label="제목" required><select id="nto" aria-label="받는 사람">${PEOPLE().filter(p=>p!==me.id).map(p=>`<option value="${esc(p)}">${esc(nameOf(p))} 확인 요청</option>`).join('')}</select><select id="npri" aria-label="중요도"><option value="0">중요도 없음</option>${PRI.map(([v,l])=>`<option value="${v}">${'!'.repeat(4-v)} ${l}</option>`).join('')}</select><button class="btn">추가</button><textarea id="nd" hidden placeholder="확인해야 할 부분 (선택)" aria-label="확인할 부분"></textarea></form>
-    <div class="dtop"><div class="seg dseg" role="tablist">${PL.map(p=>{const n=pend.filter(d=>d.to===p).length;return `<button data-box="${esc(p)}" class="${tabId===p?'on':''}">${esc(nameOf(p))} 확인 대기 ${n}${p===me.id&&n?'<i class="turn">내 차례</i>':''}</button>`}).join('')}</div><div class="seg dsort" aria-label="정렬"><button data-dsort="reg" class="${decSort==='reg'?'on':''}">등록순</button><button data-dsort="pri" class="${decSort==='pri'?'on':''}">중요도순</button></div></div>
-    ${box.length?`<ul class="dec">${(decMore?box:box.slice(0,3)).map(d=>{const canOk=d.to===me.id,canDel=isAdmin()||d.from===me.id,ks=docOf(d.id);return `<li>${canOk?`<input type="checkbox" data-ok="${esc(d.id)}" aria-label="${esc(d.title)} 확인">`:`<span class="wait" title="받은 사람이 확인해야 해요">…</span>`}${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}${priUI(d)}${stale(d)?`<span class="old">${Math.floor((Date.now()-d.createdAt)/DAY)}일째 대기</span>`:''}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="dir">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))}${ks.map(k=>` · <a href="#docs" data-open="${esc(k.id)}">근거 자료: ${esc(k.title)}</a>`).join('')}</div></div>`}${canDel?`<button class="x" data-del="${esc(d.id)}" aria-label="삭제">삭제</button>`:'<span></span>'}</li>`}).join('')}</ul>${box.length>3?`<button class="more2" id="decMore">${decMore?'접기':`더 보기 (${box.length-3}건)`}</button>`:''}`:`<p class="empty">${esc(nameOf(tabId))} 확인 대기 항목이 없어요.</p>`}
-    <details class="done"${done.length?'':' hidden'}${done.some(d=>d.id===editDec)||doneOpen?' open':''}><summary>확정됨 ${done.length}건</summary><ul class="dec">${done.map(d=>`<li><span aria-hidden="true" style="color:var(--ok);font-weight:700">✓</span>${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="by">${esc(nameOf(d.from))} → ${esc(nameOf(d.to))} · ${esc(d.confirmedBy||'')}${d.confirmedAt?' · '+md(new Date(d.confirmedAt)):''}</div></div>`}${isAdmin()||d.to===me.id?`<button class="x" data-undo="${esc(d.id)}">되돌리기</button>`:'<span></span>'}</li>`).join('')}</ul></details>
+    <form class="add" id="addf"><select id="ncat" aria-label="분류">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><input id="nt" placeholder="물어볼 것 (예: 공항광고 게재 기간)" aria-label="제목" required><select id="nto" aria-label="받는 사람">${PEOPLE().filter(p=>p!==me.id).map(p=>`<option value="${esc(p)}">${esc(who(p))} 확인 요청</option>`).join('')}</select><select id="npri" aria-label="중요도"><option value="0">중요도 없음</option>${PRI.map(([v,l])=>`<option value="${v}">${'!'.repeat(4-v)} ${l}</option>`).join('')}</select><button class="btn">추가</button><textarea id="nd" hidden placeholder="확인해야 할 부분 (선택)" aria-label="확인할 부분"></textarea></form>
+    <div class="dtop"><div class="seg dseg" role="tablist">${PL.map(p=>{const n=pend.filter(d=>d.to===p).length;return `<button data-box="${esc(p)}" class="${tabId===p?'on':''}">${esc(who(p))} 확인 대기 ${n}${p===me.id&&n?'<i class="turn">내 차례</i>':''}</button>`}).join('')}</div><div class="seg dsort" aria-label="정렬"><button data-dsort="reg" class="${decSort==='reg'?'on':''}">등록순</button><button data-dsort="pri" class="${decSort==='pri'?'on':''}">중요도순</button></div></div>
+    ${box.length?`<ul class="dec">${(decMore?box:box.slice(0,3)).map(d=>{const canOk=d.to===me.id,canDel=isAdmin()||d.from===me.id,ks=docOf(d.id);return `<li>${canOk?`<input type="checkbox" data-ok="${esc(d.id)}" aria-label="${esc(d.title)} 확인">`:`<span class="wait" title="받은 사람이 확인해야 해요">…</span>`}${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}${priUI(d)}${stale(d)?`<span class="old">${Math.floor((Date.now()-d.createdAt)/DAY)}일째 대기</span>`:''}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="dir">${esc(who(d.from))} → ${esc(who(d.to))}${ks.map(k=>` · <a href="#docs" data-open="${esc(k.id)}">근거 자료: ${esc(k.title)}</a>`).join('')}</div></div>`}${canDel?`<button class="x" data-del="${esc(d.id)}" aria-label="삭제">삭제</button>`:'<span></span>'}</li>`}).join('')}</ul>${box.length>3?`<button class="more2" id="decMore">${decMore?'접기':`더 보기 (${box.length-3}건)`}</button>`:''}`:`<p class="empty">${esc(who(tabId))} 확인 대기 항목이 없어요.</p>`}
+    <details class="done"${done.length?'':' hidden'}${done.some(d=>d.id===editDec)||doneOpen?' open':''}><summary>확정됨 ${done.length}건</summary><ul class="dec">${done.map(d=>`<li><span aria-hidden="true" style="color:var(--ok);font-weight:700">✓</span>${editDec===d.id?decForm(d):`<div class="${canEditDec(d)?'editable':''}" ${canEditDec(d)?`data-ed="${esc(d.id)}" title="눌러서 수정"`:''}><div class="t"><span class="tag">${esc(d.cat)}</span>${esc(d.title)}</div>${d.detail?`<div class="d">${esc(d.detail)}</div>`:''}<div class="by">${esc(who(d.from))} → ${esc(who(d.to))} · ${esc((d.confirmedBy||'').replace(/^(미디어볼|푸만)/,m=>DISP[m]))}${d.confirmedAt?' · '+md(new Date(d.confirmedAt)):''}</div></div>`}${isAdmin()||d.to===me.id?`<button class="x" data-undo="${esc(d.id)}">되돌리기</button>`:'<span></span>'}</li>`).join('')}</ul></details>
    </div>
    <div class="card"><div class="head"><h2>${before?'첫 주':'이번 주'} 할 일</h2><p class="sub">${md(wd(w))} ~ ${md(new Date(wd(w).getTime()+6*864e5))}</p></div>
     ${wk.length?`<ul class="week">${wk.slice(0,4).map(t=>`<li><span class="dot" style="background:${GC[t.g]}"></span><span>${esc(t.name)}</span></li>`).join('')}</ul>${wk.length>4?`<a class="more2" href="#plan">외 ${wk.length-4}건 · 간트에서 보기</a>`:''}`:`<p class="empty">이번 주에 걸린 업무가 없어요.</p>`}
@@ -485,14 +517,14 @@ function dash(){
     ${cw.length?`<ul class="clist">${cw.map(c=>`<li><span class="due">${md(new Date(c.due+'T00:00:00'))}</span><span class="ct">${esc(c.title)}<small>${c.channels.map(esc).join('·')} · ${esc(c.format||'')}</small></span><span class="stt s${STATUS.indexOf(c.status)}">${esc(c.status)}</span></li>`).join('')}</ul>`:`<p class="empty">이번 주 마감인 콘텐츠가 없어요.</p>`}
    </div>
    <div class="card"><div class="head"><h2>새로 올라온 자료</h2><a class="more" href="#docs">자료 탭</a></div>
-    ${newDocs.length?`<ul class="clist">${newDocs.map(k=>`<li><span class="kd">${k.kind==='html'?'HTML':k.kind==='text'?'글':'MD'}</span><a class="ct" href="#docs" data-open="${esc(k.id)}">${esc(k.title)}<small>${esc(nameOf(k.from||ADMIN0()))} · ${ago(k.createdAt)}</small></a></li>`).join('')}</ul>`:`<p class="empty">최근 일주일 동안 올라온 자료가 없어요.</p>`}
+    ${newDocs.length?`<ul class="clist">${newDocs.map(k=>`<li><span class="kd">${k.kind==='html'?'HTML':k.kind==='text'?'글':'MD'}</span><a class="ct" href="#docs" data-open="${esc(k.id)}">${esc(k.title)}<small>${esc(who(k.from||ADMIN0()))} · ${ago(k.createdAt)}</small></a></li>`).join('')}</ul>`:`<p class="empty">최근 일주일 동안 올라온 자료가 없어요.</p>`}
    </div>
   </section>
   <div class="card logc"><div class="head"><h2>최근 변경</h2><p class="sub">최근 5건</p></div>
    ${LOG.length?`<ul class="log">${LOG.map(x=>`<li><span class="when">${ago(x.t)}</span><span class="lb"><b>${esc(x.who)}</b><span class="what">${x.what}</span><span class="obj">${esc(x.obj)}</span></span></li>`).join('')}</ul>`:`<p class="empty">아직 변경 내역이 없어요.</p>`}
   </div>`);
   ['openDate','saleDate'].forEach(k=>{const e=app.querySelector('#'+k);if(e)e.onchange=()=>api.setSettings({[k]:e.value})});
-  app.querySelectorAll('[data-ok]').forEach(e=>e.onchange=()=>api.updateDecision(e.dataset.ok,{status:'confirmed',confirmedAt:Date.now(),confirmedBy:nameOf(me.id)+' 확인'}));
+  app.querySelectorAll('[data-ok]').forEach(e=>e.onchange=()=>api.updateDecision(e.dataset.ok,{status:'confirmed',confirmedAt:Date.now(),confirmedBy:who(me.id)+' 확인'}));
   app.querySelectorAll('[data-box]').forEach(b=>b.onclick=()=>{decBox=b.dataset.box;editDec=null;decMore=false;draw()});
   app.querySelectorAll('[data-dsort]').forEach(b=>b.onclick=()=>{decSort=b.dataset.dsort;try{localStorage.setItem('puman-dsort',decSort)}catch(e){};draw()});
   app.querySelectorAll('select[data-pri]').forEach(s=>{s.onclick=ev=>ev.stopPropagation();s.onchange=()=>api.updateDecision(s.dataset.pri,{pri:+s.value||0})});
@@ -508,7 +540,7 @@ function dash(){
   const f=app.querySelector('#addf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#nt').value.trim();if(!t)return;decBox=f.querySelector('#nto').value;api.addDecision({cat:f.querySelector('#ncat').value,pri:+f.querySelector('#npri').value||0,title:t,detail:f.querySelector('#nd').value.trim(),status:'pending',confirmedBy:'',from:me.id,to:f.querySelector('#nto').value})};
 }
 let doneOpen=false,decBox='',openDoc=null,editDec=null,editCon=null;
-const decForm=d=>`<form class="dedit" data-def="${esc(d.id)}"><div class="r"><select name="cat" aria-label="분류">${CATS.map(c=>`<option${c===d.cat?' selected':''}>${c}</option>`).join('')}</select><input name="title" value="${esc(d.title)}" aria-label="제목" required><select name="pri" aria-label="중요도"><option value="0">중요도 없음</option>${PRI.map(([v,l])=>`<option value="${v}"${priOf(d)===v?' selected':''}>${'!'.repeat(4-v)} ${l}</option>`).join('')}</select><select name="to" aria-label="받는 사람">${PEOPLE().filter(p=>p!==d.from).map(p=>`<option value="${esc(p)}"${p===d.to?' selected':''}>${esc(nameOf(p))} 확인 요청</option>`).join('')}</select></div><textarea name="detail" aria-label="확인할 부분" placeholder="확인해야 할 부분 (선택)">${esc(d.detail||'')}</textarea><div class="acts"><button class="btn">저장</button><button type="button" class="btn ghost" data-cancel>취소</button></div></form>`;
+const decForm=d=>`<form class="dedit" data-def="${esc(d.id)}"><div class="r"><select name="cat" aria-label="분류">${CATS.map(c=>`<option${c===d.cat?' selected':''}>${c}</option>`).join('')}</select><input name="title" value="${esc(d.title)}" aria-label="제목" required><select name="pri" aria-label="중요도"><option value="0">중요도 없음</option>${PRI.map(([v,l])=>`<option value="${v}"${priOf(d)===v?' selected':''}>${'!'.repeat(4-v)} ${l}</option>`).join('')}</select><select name="to" aria-label="받는 사람">${PEOPLE().filter(p=>p!==d.from).map(p=>`<option value="${esc(p)}"${p===d.to?' selected':''}>${esc(who(p))} 확인 요청</option>`).join('')}</select></div><textarea name="detail" aria-label="확인할 부분" placeholder="확인해야 할 부분 (선택)">${esc(d.detail||'')}</textarea><div class="acts"><button class="btn">저장</button><button type="button" class="btn ghost" data-cancel>취소</button></div></form>`;
 const canEditDec=d=>isAdmin()||d.from===me.id;
 function armDelete(btn,fn){if(btn.dataset.arm){fn();return}btn.dataset.arm=1;btn.textContent='한 번 더 누르면 삭제';btn.style.color='var(--rose)';setTimeout(()=>{if(btn.isConnected){delete btn.dataset.arm;btn.textContent='삭제';btn.style.color=''}},3000)}
 
@@ -543,11 +575,7 @@ function plan(){
   <section class="sum">
    <div class="card"><div class="mnav"><h3>월별 예산</h3><span class="arw"><button data-pm="-1" aria-label="이전 달"${pmI<=0?' disabled':''}>‹</button><b>${PM[0]}</b><button data-pm="1" aria-label="다음 달"${pmI>=MONTHS.length-1?' disabled':''}>›</button></span></div><div class="big">${monthSum(PM)?fmt(monthSum(PM)):'–'}</div><div class="sub">만원</div></div>
    <div class="card"><h3>총계</h3><div class="big">${tot?fmt(tot):'–'}</div><div class="sub">만원</div></div>
-   <div class="card"><h3>3안 비교 (총액, 만원)</h3><div class="scen">
-     <div><label for="scenMin">최소안</label>${scenIn('scenMin',st.scenMin)}</div>
-     <div><label>적정안 · 현재</label><b>${tot?fmt(tot):'–'}</b></div>
-     <div><label for="scenAgg">공격안</label>${scenIn('scenAgg',st.scenAgg)}</div></div></div>
-  </section>
+</section>
   <div class="card"><div class="head"><h2>홍보 일정과 주별 금액</h2><p class="sub">${isAdmin()?'칸을 눌러 일정을 넣고 금액(만원)을 적어요. 0이면 일정만 표시돼요.':'금액 단위는 만원이에요.'}</p></div>
    <div class="gbar"><div class="seg gz" role="tablist" aria-label="보기 단위"><button data-gz="w" class="${gz==='w'?'on':''}">주</button><button data-gz="m" class="${gz==='m'?'on':''}">월</button></div><span class="sub">${gz==='m'?'월 칸을 누르면 그 달의 주 보기로 이동해요.':'칸이 많으면 옆으로 넘겨 보세요.'}</span></div>
    ${gz==='m'?mview():`<div class="gwrap"><table class="g"><thead><tr><th class="nm" rowspan="2">업무</th>${head1}<th class="tot" rowspan="2">합계</th></tr><tr>${head2}</tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>`}
@@ -671,8 +699,8 @@ function docs(){
    <p class="sub" id="kmsg"></p></div>
   <section class="docs">
    <div class="card dlist"><input id="kq" placeholder="자료 검색" value="${esc(docQ)}" aria-label="자료 검색">
-    ${list.length?list.map(k=>{const ln=S.decisions.find(d=>linksOf(k).includes(d.id));return `<button class="ditem${k.id===openDoc?' on':''}" data-k="${esc(k.id)}"><span class="tag">${esc(k.cat)}</span><b>${esc(k.title)}</b><span class="sub">${dt(k.createdAt)}${k.from?' · '+esc(nameOf(k.from)):''}${ln?' · 결정: '+esc(ln.title)+(linksOf(k).length>1?' 외 '+(linksOf(k).length-1):''):''}</span></button>`}).join(''):'<p class="empty">아직 올린 자료가 없어요.</p>'}</div>
-   <article class="card dview">${cur?`<div class="dhead"><div><span class="tag">${esc(cur.cat)}</span><span class="sub">${dt(cur.createdAt)}${cur.from?' · '+esc(nameOf(cur.from))+' 올림':''}</span></div>${canEd(cur)?`<div class="dact">${cur.kind==='html'?'<button class="x" id="kfull">크게 보기</button>':`<button class="x" id="kedit">${editing?'취소':'수정'}</button>`}<button class="x" id="kdel">삭제</button></div>`:''}</div>${editing&&canEd(cur)?`<form id="kef" class="kedit"><input id="ket" value="${esc(cur.title)}" aria-label="제목" required><textarea id="keb" aria-label="내용">${esc(cur.body)}</textarea><button class="btn">저장</button></form>`:`${(()=>{const ls=linksOf(cur).map(id=>S.decisions.find(d=>d.id===id)).filter(Boolean);return (ls.length?`<p class="linked">연결된 결정 · ${ls.map(d=>`<b>${esc(d.title)}</b>`).join(' · ')}</p>`:'')+(canEd(cur)&&!editing?`<details class="lbox"><summary>결정 항목 연결하기</summary>${decChecks(S.decisions.map(normD),linksOf(cur),'kl2')}</details>`:'')})()}${cur.kind==='html'?'<iframe class="hview" id="hview" title="HTML 자료" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>':`<div class="mdv">${cur.kind==='text'?`<h1>${esc(cur.title)}</h1>`:''}${mdHtml(cur.body,cur.kind==='text')}</div>`}`}`:'<p class="empty">왼쪽에서 자료를 골라주세요.</p>'}</article>
+    ${list.length?list.map(k=>{const ln=S.decisions.find(d=>linksOf(k).includes(d.id));return `<button class="ditem${k.id===openDoc?' on':''}" data-k="${esc(k.id)}"><span class="tag">${esc(k.cat)}</span><b>${esc(k.title)}</b><span class="sub">${dt(k.createdAt)}${k.from?' · '+esc(who(k.from)):''}${ln?' · 결정: '+esc(ln.title)+(linksOf(k).length>1?' 외 '+(linksOf(k).length-1):''):''}</span></button>`}).join(''):'<p class="empty">아직 올린 자료가 없어요.</p>'}</div>
+   <article class="card dview">${cur?`<div class="dhead"><div><span class="tag">${esc(cur.cat)}</span><span class="sub">${dt(cur.createdAt)}${cur.from?' · '+esc(who(cur.from))+' 올림':''}</span></div>${canEd(cur)?`<div class="dact">${cur.kind==='html'?'<button class="x" id="kfull">크게 보기</button>':`<button class="x" id="kedit">${editing?'취소':'수정'}</button>`}<button class="x" id="kdel">삭제</button></div>`:''}</div>${editing&&canEd(cur)?`<form id="kef" class="kedit"><input id="ket" value="${esc(cur.title)}" aria-label="제목" required><textarea id="keb" aria-label="내용">${esc(cur.body)}</textarea><button class="btn">저장</button></form>`:`${(()=>{const ls=linksOf(cur).map(id=>S.decisions.find(d=>d.id===id)).filter(Boolean);return (ls.length?`<p class="linked">연결된 결정 · ${ls.map(d=>`<b>${esc(d.title)}</b>`).join(' · ')}</p>`:'')+(canEd(cur)&&!editing?`<details class="lbox"><summary>결정 항목 연결하기</summary>${decChecks(S.decisions.map(normD),linksOf(cur),'kl2')}</details>`:'')})()}${cur.kind==='html'?'<iframe class="hview" id="hview" title="HTML 자료" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>':`<div class="mdv">${cur.kind==='text'?`<h1>${esc(cur.title)}</h1>`:''}${mdHtml(cur.body,cur.kind==='text')}</div>`}`}`:'<p class="empty">왼쪽에서 자료를 골라주세요.</p>'}</article>
   </section>`);
   let fileText='',fileName='';
   app.querySelectorAll('[data-up]').forEach(x=>x.onclick=()=>{upMode=x.dataset.up;draw()});
@@ -711,8 +739,8 @@ function member(){
   <section class="grid4">
    <div class="card"><h3>목표 구좌</h3><div class="big">${fmt(qty)}<span style="font-size:15px;font-weight:600"> 구좌</span></div><div class="sub">${T.map(t=>esc(t.name)+' '+fmt(t.qty)).join(' · ')}</div></div>
    <div class="card"><h3>판매</h3><div class="big">${fmt(sold)}<span style="font-size:15px;font-weight:600"> 구좌</span></div><div class="sub">진행률 ${pct.toFixed(1)}% · 남은 ${fmt(qty-sold)}구좌</div><div class="stack">${T.map(t=>`<i style="width:${qty?(+t.sold||0)/qty*100:0}%;background:${TCOL[t.name]||'var(--oak)'}"></i>`).join('')}</div></div>
-   <div class="card"><h3>보증금 총액 (목표)</h3><div class="big">${priced?fmt(dep):'가격 미정'}${priced?'<span style="font-size:15px;font-weight:600"> 만원</span>':''}</div><div class="sub">${priced?'판매분 '+fmt(depSold)+'만원':'등급별 보증금을 넣으면 계산돼요'}</div></div>
-   <div class="card"><h3>오픈까지 필요한 판매 속도</h3><div class="big">${pace!==null?'주 '+fmt(pace):'날짜 미정'}${pace!==null?'<span style="font-size:15px;font-weight:600"> 구좌</span>':''}</div><div class="sub">${pace!==null?(sd&&sd>today?'판매 시작일':'오늘')+'부터 오픈까지 '+weeks+'주 기준':'대시보드에서 오픈일을 정하면 계산돼요'}</div></div>
+   <div class="card"><h3>보증금 총액 (목표)</h3><div class="big">${priced?fmt(dep):'<span class="kt">가격 미정</span>'}${priced?'<span style="font-size:15px;font-weight:600"> 만원</span>':''}</div><div class="sub">${priced?'판매분 '+fmt(depSold)+'만원':'등급별 보증금을 넣으면 계산돼요'}</div></div>
+   <div class="card"><h3>오픈까지 필요한 판매 속도</h3><div class="big">${pace!==null?'<span class="kt">주</span> '+fmt(pace):'<span class="kt">날짜 미정</span>'}${pace!==null?'<span style="font-size:15px;font-weight:600"> 구좌</span>':''}</div><div class="sub">${pace!==null?(sd&&sd>today?'판매 시작일':'오늘')+'부터 오픈까지 '+weeks+'주 기준':'대시보드에서 오픈일을 정하면 계산돼요'}</div></div>
   </section>
   <div class="card"><div class="head"><h2>등급별 현황</h2><p class="sub">${esc(st.memberNote||'')}</p></div>
    <div style="overflow-x:auto"><table class="t mt"><thead><tr><th>등급</th><th class="n">구좌</th><th class="n">보증금 (만원/구좌)</th><th class="n">판매</th><th>진행률</th><th>혜택 메모</th></tr></thead><tbody>
