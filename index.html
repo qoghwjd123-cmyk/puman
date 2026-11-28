@@ -248,6 +248,10 @@ input,select,textarea{border-radius:2px!important;background:#FAFAFB!important;b
 .big .kt{font-family:"Pretendard Variable",Pretendard,sans-serif;font-size:26px;font-weight:700;vertical-align:4px}
 @media(max-width:700px){.sum{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;max-width:none}.sum .big{font-size:40px}.sum .mnav{flex-wrap:nowrap}.sum .arw button{width:26px;height:26px}.sum .arw b{min-width:30px}}
 
+
+.cnote{display:block;margin-top:3px;font-size:12.5px;font-weight:400;color:var(--mute);line-height:1.45;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#cnote{grid-column:1/-1;resize:vertical;min-height:40px;font-family:inherit;padding:9px 10px;font-size:14px}
+.enote{display:block;width:100%;margin-top:6px;resize:vertical;font-family:inherit;font-size:14px;padding:6px 8px;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -291,9 +295,6 @@ const SEED_TASKS=[
  T('기반','홍보 성과 보고','green',L('K','O','T','X','AC','AG'),false,'월 1회, 비용은 기획·운영에 포함'),
  T('콘텐츠','유튜브 제작·업로드','blue',[],true),
  T('콘텐츠','인스타 제작·업로드','blue',[],true),
- T('PR·광고','광고 기획','blue',[],true),
- T('PR·광고','광고 촬영','blue',[],true),
- T('PR·광고','광고 편집·입고','blue',[],true),
  T('PR·광고','오픈용 광고 제작','blue',[],true),
  T('PR·광고','유튜브·메타 광고','yel',[],true),
  T('PR·광고','공항광고 계약·심의','blue',[],true),
@@ -325,6 +326,7 @@ const SEED_DEC=[
  D('예산','공항 옥외광고 비용 조사 포함','김포공항 무빙워크 우선, 국내 주요 공항','confirmed','카톡 확인')].map((d,i)=>({...d,id:'d'+String(i).padStart(2,'0'),createdAt:i}));
 const SEED_TIERS=[{name:'Founders',qty:300,price:'',sold:0,benefit:''},{name:'Standard',qty:800,price:'',sold:0,benefit:''},{name:'Premium',qty:300,price:'',sold:0,benefit:''}];
 const MIG1=t=>{const ren={'숏폼 제작':'인스타 게시글·릴스 제작','숏폼·SNS 업로드':'인스타 게시글·릴스 업로드'};const clear=t.g==='콘텐츠'||t.g==='PR·광고';return {name:ren[t.name]||t.name,cells:clear?{}:t.cells,note:clear?'':(t.note||'')}};
+const MIG4_DEL=['광고 기획','광고 촬영','광고 편집·입고'];
 const MIG2_REN={'유튜브 롱폼 제작':'유튜브 제작·업로드','인스타 게시글·릴스 제작':'인스타 제작·업로드','숏폼 제작':'인스타 제작·업로드'},MIG2_DEL=['유튜브 롱폼 업로드','인스타 게시글·릴스 업로드','숏폼·SNS 업로드'];
 const SEED_SET={openDate:'',saleDate:'',scenMin:'',scenAgg:'',tiers:SEED_TIERS,memberNote:'5년 보증금형 (사업·공간 레퍼런스 v2 기획안 기준)'};
 const DOC_CATS=['리서치','기획','예산','회의','기타'];
@@ -367,6 +369,7 @@ function localApi(){
   if(!S.docs)S.docs=SEED_DOCS;
   S.tasks.forEach(t=>{if(t.name==='기획·운영 (미디어볼 월 고정)')t.name='기획·운영'});
   if(!S.settings.mig1){S.tasks=S.tasks.map(t=>({...t,...MIG1(t)}));S.settings.mig1=true}
+  if(!S.settings.mig4){S.tasks=S.tasks.filter(t=>!MIG4_DEL.includes(t.name));S.settings.mig4=true}
   if(!S.settings.mig3){if(!S.tasks.some(t=>t.name==='콘텐츠 기획'))S.tasks.push({...PLAN_TASK});S.tasks.sort((a,b)=>a.order-b.order);S.settings.mig3=true}
   if(!S.settings.mig2){S.tasks=S.tasks.filter(t=>!MIG2_DEL.includes(t.name)).map(t=>MIG2_REN[t.name]?{...t,name:MIG2_REN[t.name]}:t);S.settings.mig2=true}
   S.decisions.forEach(d=>{['from','to'].forEach(k=>{d[k]=nameOf(d[k])});if(d.confirmedBy)d.confirmedBy=d.confirmedBy.replace(/^(형님|현우|호정) 확인$/,m=>({'형님 확인':'푸만 확인','현우 확인':'푸만 확인','호정 확인':'미디어볼 확인'})[m])});(S.docs||[]).forEach(k=>{if(k.from)k.from=nameOf(k.from)});
@@ -404,6 +407,7 @@ async function fireApi(){
       F.onSnapshot(c('contents'),q=>{S.contents=q.docs.map(d=>({id:d.id,...d.data()}));draw()});
       F.onSnapshot(c('tasks'),q=>{S.tasks=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
         if(me.role==='admin'){S.tasks.filter(t=>t.name==='기획·운영 (미디어볼 월 고정)').forEach(t=>F.updateDoc(F.doc(db,'tasks',t.id),{name:'기획·운영'}));
+          if(S.tasks.length&&settingsLoaded&&!S.settings.mig4&&isAdmin()){S.tasks.forEach(t=>{if(MIG4_DEL.includes(t.name))F.deleteDoc(F.doc(db,'tasks',t.id))});S.settings.mig4=true;F.setDoc(F.doc(db,'settings','main'),{mig4:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig3){if(!S.tasks.some(t=>t.name==='콘텐츠 기획')){const{id,...r}=PLAN_TASK;F.setDoc(F.doc(db,'tasks',id),r)}F.setDoc(F.doc(db,'settings','main'),{mig3:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig2){S.tasks.forEach(t=>{if(MIG2_DEL.includes(t.name))F.deleteDoc(F.doc(db,'tasks',t.id));else if(MIG2_REN[t.name])F.updateDoc(F.doc(db,'tasks',t.id),{name:MIG2_REN[t.name]})});F.setDoc(F.doc(db,'settings','main'),{mig2:true},{merge:true})}
           if(S.tasks.length&&settingsLoaded&&!S.settings.mig1){S.tasks.forEach(t=>{const m=MIG1(t);F.updateDoc(F.doc(db,'tasks',t.id),{name:m.name,cells:m.cells,note:m.note})});F.setDoc(F.doc(db,'settings','main'),{mig1:true},{merge:true})}}
@@ -640,17 +644,17 @@ function content(){
   const body=view==='list'?
    (list.length?`<div style="overflow-x:auto"><table class="cl"><thead><tr><th>채널 · 형식</th><th>제목</th><th>진행상황</th><th>예정일</th>${isAdmin()?'<th></th>':''}</tr></thead><tbody>${list.map(c=>`<tr>
      ${editCon===c.id?`<td><div class="chs">${CHANNELS.map(ch=>`<label><input type="checkbox" class="ech" value="${ch}"${c.channels.includes(ch)?' checked':''}>${ch}</label>`).join('')}</div><select class="efm" aria-label="형식" style="margin-top:6px">${FORMATS.map(t=>`<option${t===c.format?' selected':''}>${t}</option>`).join('')}</select></td>
-     <td><input class="etl" value="${esc(c.title)}" aria-label="제목"><div class="acts" style="margin-top:6px"><button class="btn" data-csave="${esc(c.id)}">저장</button><button class="btn ghost" data-ccancel>취소</button></div></td>`
+     <td><input class="etl" value="${esc(c.title)}" aria-label="제목"><textarea class="enote" rows="2" placeholder="어떤 내용인지 (선택)" aria-label="내용 메모">${esc(c.note||'')}</textarea><div class="acts" style="margin-top:6px"><button class="btn" data-csave="${esc(c.id)}">저장</button><button class="btn ghost" data-ccancel>취소</button></div></td>`
      :`<td style="white-space:nowrap"${isAdmin()?` class="editable" data-ced="${esc(c.id)}" title="눌러서 수정"`:''}>${c.channels.map(ch=>`<span class="chip" style="background:${CC[ch]}22;color:${CC[ch]};margin-right:4px">${esc(ch)}</span>`).join('')}<span class="fmt">${esc(c.format)}</span></td>
-     <td class="tt${isAdmin()?' editable':''}"${isAdmin()?` data-ced="${esc(c.id)}" title="눌러서 수정"`:''}>${esc(c.title)}</td>`}<td>${stSel(c)}</td>
+     <td class="tt${isAdmin()?' editable':''}"${isAdmin()?` data-ced="${esc(c.id)}" title="눌러서 수정"`:''}>${esc(c.title)}${c.note?`<small class="cnote">${esc(c.note)}</small>`:''}</td>`}<td>${stSel(c)}</td>
      <td class="due">${isAdmin()?`<input type="date" class="date" style="margin:0;width:auto" data-due="${esc(c.id)}" value="${esc(c.due||'')}" aria-label="예정일">${ddChip(c.due,c.status)}`:dueHtml(c.due,c.status)}</td>
      ${isAdmin()?`<td style="text-align:right"><button class="x" data-cdel="${esc(c.id)}">삭제</button></td>`:''}</tr>`).join('')}</tbody></table></div>`:`<p class="empty">조건에 맞는 콘텐츠가 없어요.</p>`)
-   :`<div class="board">${CHANNELS.filter(t=>!flt.ch||t===flt.ch).map(t=>{const cs=list.filter(c=>c.channels.includes(t));return `<div class="col"><h3><i class="typ" style="background:${CC[t]}"></i>${t} <span>${cs.length}</span></h3>${cs.map(c=>`<div class="kc${isAdmin()?' editable':''}"${isAdmin()?` data-kced="${esc(c.id)}" title="눌러서 수정"`:''}><span class="fmt">${esc(c.format)}${c.channels.length>1?' · '+c.channels.filter(x=>x!==t).map(esc).join('·')+' 함께':''}</span><b>${esc(c.title)}</b><div class="meta"><span class="chip st-${esc(c.status)}">${esc(c.status)}</span>${dueHtml(c.due,c.status)}</div></div>`).join('')||'<p class="empty" style="padding:4px">없음</p>'}</div>`}).join('')}</div>`;
+   :`<div class="board">${CHANNELS.filter(t=>!flt.ch||t===flt.ch).map(t=>{const cs=list.filter(c=>c.channels.includes(t));return `<div class="col"><h3><i class="typ" style="background:${CC[t]}"></i>${t} <span>${cs.length}</span></h3>${cs.map(c=>`<div class="kc${isAdmin()?' editable':''}"${isAdmin()?` data-kced="${esc(c.id)}" title="눌러서 수정"`:''}><span class="fmt">${esc(c.format)}${c.channels.length>1?' · '+c.channels.filter(x=>x!==t).map(esc).join('·')+' 함께':''}</span><b>${esc(c.title)}</b>${c.note?`<small class="cnote">${esc(c.note)}</small>`:''}<div class="meta"><span class="chip st-${esc(c.status)}">${esc(c.status)}</span>${dueHtml(c.due,c.status)}</div></div>`).join('')||'<p class="empty" style="padding:4px">없음</p>'}</div>`}).join('')}</div>`;
   shell('content',`
   ${isAdmin()?`<div class="card"><div class="head"><h2>새 콘텐츠 추가</h2></div><form class="cadd" id="cf">
     <input id="ct" placeholder="제목" aria-label="제목" required><div class="chs" role="group" aria-label="채널">${CHANNELS.map((c,i)=>`<label><input type="checkbox" value="${c}"${i===0?' checked':''}>${c}</label>`).join('')}</div><select id="cfm" aria-label="형식">${FORMATS.map(t=>`<option>${t}</option>`).join('')}</select>
     <select id="cst" aria-label="진행상황">${STATUS.map(s=>`<option>${s}</option>`).join('')}</select><input id="cdue" type="date" aria-label="예정일">
-    <button class="btn" style="background:var(--c-pr);color:#2E2925">+ 추가</button></form></div>`:''}
+    <button class="btn" style="background:var(--c-pr);color:#2E2925">+ 추가</button><textarea id="cnote" rows="1" placeholder="어떤 내용인지 (선택)" aria-label="내용 메모"></textarea></form></div>`:''}
   <div class="ctop"><h2>전체 콘텐츠</h2><div class="seg"><button data-v="list" class="${view==='list'?'on':''}">목록</button><button data-v="board" class="${view==='board'?'on':''}">보드</button></div></div>
   <div class="fbar"><input id="fq" placeholder="콘텐츠 검색" value="${esc(flt.q)}" aria-label="검색"><select id="fc" aria-label="채널 필터"><option value="">전체 채널</option>${CHANNELS.map(t=>`<option${t===flt.ch?' selected':''}>${t}</option>`).join('')}</select><select id="ff" aria-label="형식 필터"><option value="">전체 형식</option>${FORMATS.map(t=>`<option${t===flt.fm?' selected':''}>${t}</option>`).join('')}</select>
    <label><input type="checkbox" id="fh"${flt.hideDone?' checked':''}> 완료 숨기기</label><span class="counts">전체 ${all.length} · 기획 ${cnt('기획')} · 진행 ${cnt('진행')} · 완료 ${cnt('완료')}</span></div>
@@ -664,11 +668,11 @@ function content(){
   app.querySelectorAll('[data-st]').forEach(e=>e.onchange=()=>api.updateContent(e.dataset.st,{status:e.value}));
   app.querySelectorAll('[data-ced]').forEach(e=>e.onclick=()=>{editCon=e.dataset.ced;draw();const t=app.querySelector('.etl');if(t){t.focus();t.select()}});
   app.querySelectorAll('[data-kced]').forEach(e=>e.onclick=()=>{editCon=e.dataset.kced;view='list';draw();const t=app.querySelector('.etl');if(t){t.focus();t.scrollIntoView({block:'center'})}});
-  const cs=app.querySelector('[data-csave]');if(cs){const row=cs.closest('tr');const save=()=>{const chs=[...row.querySelectorAll('.ech:checked')].map(x=>x.value);if(!chs.length){row.querySelector('.chs').style.outline='2px solid var(--rose)';return}const id=cs.dataset.csave;editCon=null;api.updateContent(id,{title:row.querySelector('.etl').value.trim()||'제목 없음',channels:chs,format:row.querySelector('.efm').value})};
+  const cs=app.querySelector('[data-csave]');if(cs){const row=cs.closest('tr');const save=()=>{const chs=[...row.querySelectorAll('.ech:checked')].map(x=>x.value);if(!chs.length){row.querySelector('.chs').style.outline='2px solid var(--rose)';return}const id=cs.dataset.csave;editCon=null;api.updateContent(id,{note:row.querySelector('.enote').value.trim(),title:row.querySelector('.etl').value.trim()||'제목 없음',channels:chs,format:row.querySelector('.efm').value})};
     cs.onclick=save;row.querySelector('.etl').onkeydown=e=>{if(e.key==='Enter')save();if(e.key==='Escape'){editCon=null;draw()}};row.querySelector('[data-ccancel]').onclick=()=>{editCon=null;draw()}}
   app.querySelectorAll('[data-due]').forEach(e=>e.onchange=()=>api.updateContent(e.dataset.due,{due:e.value}));
   app.querySelectorAll('[data-cdel]').forEach(e=>e.onclick=()=>armDelete(e,()=>api.deleteContent(e.dataset.cdel)));
-  const f=app.querySelector('#cf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#ct').value.trim();if(!t)return;const chs=[...f.querySelectorAll('.chs input:checked')].map(x=>x.value);if(!chs.length){f.querySelector('.chs').style.outline='2px solid var(--rose)';return}api.addContent({title:t,channels:chs,format:f.querySelector('#cfm').value,status:f.querySelector('#cst').value,due:f.querySelector('#cdue').value})};
+  const f=app.querySelector('#cf');if(f)f.onsubmit=ev=>{ev.preventDefault();const t=f.querySelector('#ct').value.trim();if(!t)return;const chs=[...f.querySelectorAll('.chs input:checked')].map(x=>x.value);if(!chs.length){f.querySelector('.chs').style.outline='2px solid var(--rose)';return}api.addContent({note:f.querySelector('#cnote').value.trim(),title:t,channels:chs,format:f.querySelector('#cfm').value,status:f.querySelector('#cst').value,due:f.querySelector('#cdue').value})};
 }
 
 // ---------- 자료 ----------
